@@ -3,6 +3,7 @@
 ## Requirements
 Recommend using [Anaconda3.7](https://docs.anaconda.com/anaconda/install/), other API needed:
 - [PyTorch](https://pytorch.org/): 
+- 
     For Windows and Linux
     ```python
     #cpu ver
@@ -20,3 +21,6 @@ Recommend using [Anaconda3.7](https://docs.anaconda.com/anaconda/install/), othe
     ```
 - re
 - unicodedata
+
+## Projects:
+- [FreeChat](https://github.com/shinoyuki222/PyTorch_NLP/tree/master/FreeChat)
