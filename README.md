@@ -1,9 +1,10 @@
 # Pytorch NLP
 
 ## Requirements
-Recommend using [Anaconda3.7](https://docs.anaconda.com/anaconda/install/), other API needed:
-- [PyTorch](https://pytorch.org/): 
-- 
+Recommend using [Anaconda3.7](https://docs.anaconda.com/anaconda/install/)
+
+Other API needed:
+- [PyTorch](https://pytorch.org/):  
     For Windows and Linux
     ```python
     #cpu ver

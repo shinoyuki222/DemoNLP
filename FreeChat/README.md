@@ -1,4 +1,5 @@
 # Pytorch NLP - FreeChat
+[Main repo](https://github.com/shinoyuki222/PyTorch_NLP)
 
 #### To train the model
     python pt_seq2seq_atten_train.py

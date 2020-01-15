@@ -632,7 +632,7 @@ if __name__ == '__main__':
 	if args.load_model:
 		print("load_model: {0}, checkpoint = {1}".format(args.load_model, args.checkpoint_iter))
 
-	if args.load_model and args.skip_train:
+	if args.load_model==False and args.skip_train:
 		print("load_model: {0}, skip_train = {1}".format(args.load_model, args.skip_train))
 		print("!!!Warning!!!\nPlease using -l to load a trained model, otherwite using a random model.")
 
