@@ -9,8 +9,8 @@
     │   └── core_reduced      # simpy chat bot data
     ├── save
     │   └── chatbot_model     # saved model
-    │       └──core_reduced   # name depend on corpus
-    │           └──2-2_500    # name depend on {encoder_n_layers}-{decoder_n_layers}_{hiddin_size} 
+    │       └──core_reduced   # named by corpus
+    │           └──2-2_500    # named by {encoder_n_layers}-{decoder_n_layers}_{hiddin_size} 
     └── pt_seq2seq_atten_train.py             
 ```
 #### To train the model

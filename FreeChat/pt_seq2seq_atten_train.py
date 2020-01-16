@@ -624,6 +624,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
+	save_dir = os.path.join("", "save")
 	corpus_name = args.corpus_name
 	corpus = os.path.join("chatbot_data", corpus_name)
 	# datafile = os.path.join(corpus, "")
@@ -646,18 +647,6 @@ if __name__ == '__main__':
 		print("========================")
 
 	
-
-	# Load/Assemble voc and pairs
-	save_dir = os.path.join("", "save")
-	voc, pairs = loadPrepareData(corpus, corpus_name, datafile, save_dir)
-	# Print some pairs to validate
-	print("\npairs:")
-	for pair in pairs[:10]:
-		print(pair)
-
-	# Trim voc and pairs
-	pairs = trimRareWords(voc, pairs, MIN_COUNT)
-
 
 	# # Example for validation
 	# small_batch_size = 5
@@ -683,6 +672,7 @@ if __name__ == '__main__':
 	
 	# Load model if a loadFilename is provided
 	if args.load_model:
+		voc = Voc(corpus_name)
 		# Set checkpoint to load from; set to None if starting from scratch
 		checkpoint_iter = args.checkpoint_iter
 		loadFilename = os.path.join(save_dir, model_name, corpus_name, '{}-{}_{}'.format(encoder_n_layers, decoder_n_layers, hidden_size),'{}_checkpoint.tar'.format(checkpoint_iter))
@@ -692,7 +682,6 @@ if __name__ == '__main__':
 		#checkpoint = torch.load(loadFilename, map_location=torch.device('cpu'))
 
 		checkpoint = torch.load(loadFilename, map_location=torch.device(device))
-
 		encoder_sd = checkpoint['en']
 		decoder_sd = checkpoint['de']
 		encoder_optimizer_sd = checkpoint['en_opt']
@@ -701,7 +690,14 @@ if __name__ == '__main__':
 		voc.__dict__ = checkpoint['voc_dict']
 	else:
 		loadFilename = None
-
+		# Load/Assemble voc and pairs
+		voc, pairs = loadPrepareData(corpus, corpus_name, datafile, save_dir)
+		# Print some pairs to validate
+		print("\npairs:")
+		for pair in pairs[:10]:
+			print(pair)
+		# Trim voc and pairs
+		pairs = trimRareWords(voc, pairs, MIN_COUNT)
 
 
 	print('Building encoder and decoder ...')
@@ -722,7 +718,9 @@ if __name__ == '__main__':
 	print('Models built and ready to go!')
 
 
-	if not(args.skip_train):
+
+
+	if args.skip_train==False:
 		# Configure training/optimization
 		clip = 50.0
 		teacher_forcing_ratio = 1.0
@@ -745,15 +743,16 @@ if __name__ == '__main__':
 			decoder_optimizer.load_state_dict(decoder_optimizer_sd)
 
 		# If you have cuda, configure cuda to call
-		for state in encoder_optimizer.state.values():
-			for k, v in state.items():
-			    if isinstance(v, torch.Tensor):
-			        state[k] = v.cuda()
+		if device=='cuda':
+			for state in encoder_optimizer.state.values():
+				for k, v in state.items():
+				    if isinstance(v, torch.Tensor):
+				        state[k] = v.cuda()
 
-		for state in decoder_optimizer.state.values():
-			for k, v in state.items():
-			    if isinstance(v, torch.Tensor):
-			        state[k] = v.cuda()
+			for state in decoder_optimizer.state.values():
+				for k, v in state.items():
+				    if isinstance(v, torch.Tensor):
+				        state[k] = v.cuda()
 
 		# Run training iterations
 		print("Starting Training!")
@@ -765,7 +764,7 @@ if __name__ == '__main__':
 			clip, corpus_name, 
 			loadFilename)
 
-	if not(args.skip_evaluate):
+	if args.skip_evaluate==False:
 		# Set dropout layers to eval mode
 		encoder.eval()
 		decoder.eval()
