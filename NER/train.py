@@ -70,6 +70,7 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
     start_iteration = 1
     print_loss = 0
     print_loss_dev = 0
+    best_loss = float('Inf')
     if loadFilename:
         start_iteration = checkpoint['iteration'] + 1
 
@@ -102,8 +103,11 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
                                                                                           print_loss_avg, print_loss_dev_avg))
             print_loss = 0
             print_loss_dev = 0
+
         # Save checkpoint
-        if (iteration % save_every == 0):
+        if print_loss_dev_avg - best_loss < 0.0:
+            print("validation loss {0} is better than {1}, saving checkpoint....".foramat(print_loss_dev_avg,best_loss))
+            best_loss = print_loss_dev_avg
             directory = os.path.join(save_dir, model_name, corpus_name,
                                      '{}_{}'.format(rnn_n_layers, hidden_size))
             if not os.path.exists(directory):
@@ -113,8 +117,24 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
                 'model': model.state_dict(),
                 'model_opt': model_optimizer.state_dict(),
                 'loss': loss,
+                'loss_dev': loss_dev,
                 'embedding': embedding.state_dict()
             }, os.path.join(directory, '{}_{}.tar'.format(iteration, 'checkpoint')))
+
+
+        # # Save checkpoint
+        # if (iteration % save_every == 0):
+        #     directory = os.path.join(save_dir, model_name, corpus_name,
+        #                              '{}_{}'.format(rnn_n_layers, hidden_size))
+        #     if not os.path.exists(directory):
+        #         os.makedirs(directory)
+        #     torch.save({
+        #         'iteration': iteration,
+        #         'model': model.state_dict(),
+        #         'model_opt': model_optimizer.state_dict(),
+        #         'loss': loss,
+        #         'embedding': embedding.state_dict()
+        #     }, os.path.join(directory, '{}_{}.tar'.format(iteration, 'checkpoint')))
 
 
 
