@@ -106,7 +106,7 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
 
         # Save checkpoint
         if print_loss_dev_avg - best_loss < 0.0:
-            print("validation loss {0} is better than {1}, saving checkpoint....".foramat(print_loss_dev_avg,best_loss))
+            print("validation loss {0} is better than {1}, saving checkpoint....".format(print_loss_dev_avg,best_loss))
             best_loss = print_loss_dev_avg
             directory = os.path.join(save_dir, model_name, corpus_name,
                                      '{}_{}'.format(rnn_n_layers, hidden_size))
