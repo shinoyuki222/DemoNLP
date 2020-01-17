@@ -25,3 +25,4 @@ Other API needed:
 
 ## Projects:
 - [FreeChat](https://github.com/shinoyuki222/PyTorch_NLP/tree/master/FreeChat)
+- [NER](https://github.com/shinoyuki222/PyTorch_NLP/tree/master/NER)
