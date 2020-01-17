@@ -10,12 +10,12 @@ Model based on paper:
     ├── NER_data
     │   └── MSRA                # MSRA corpus
     ├── saved                   # auto created after trainig
-    │   └── NER_model                # saved model
-    │       └──MSRA                  # named by corpus
-    │           ├──Dicts             # saved dict
-    │           │   ├──tag.json 
-    │           │   └──voc.json
-    │           └──2_500            # saved checkpointer, which named by {rnn_n_layers}_{hiddin_size} 
+    │   └── MSRA                     # named by corpus
+    │       ├── Dicts                # saved dict
+    │       │   ├── tag.json 
+    │       │   └── voc.json
+    │       └── NER_model                  # named by corpus                
+    │           └── 2_500            # saved checkpointer, which named by {rnn_n_layers}_{hiddin_size} 
     │── consts.py
     ├── dataloader.py     
     │── model.py
