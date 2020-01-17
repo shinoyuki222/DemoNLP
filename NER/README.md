@@ -1,6 +1,8 @@
 # Pytorch NLP - FreeChat
 [Main repo](https://github.com/shinoyuki222/PyTorch_NLP)
 
+Model based on paper:
+[Knowledge Graph Embedding Based Question Answering](http://research.baidu.com/Public/uploads/5c1c9a58317b3.pdf)
 
 ```
 └── shinoyuki222/PyTorch_NLP/tree/master/NER
@@ -17,4 +19,4 @@
     └── train.py            
 ```
 #### To train the model
-    python train.y
+    python train.py
