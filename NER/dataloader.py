@@ -224,19 +224,19 @@ def length_check(p):
 
 # Returns True iff tag in pair 'p' are valid
 def tag_check(p, tag):
-    for tag in p[1].split(' '):
-        if tag not in tag.tag2index.keys():
+    for entity in p[1].split(' '):
+        if entity not in tag.tag2index.keys():
             print("tag {0} not in training data".format(tag))
             return False
     return True
 
 # Filter pairs using filterPair condition
-def filterPairs(pairs, train=True):
-    if train:
+def filterPairs(pairs, tag=None):
+    if tag == None:
         return [pair for pair in pairs if length_check(pair)]
     # check if tag in tag_dict for dev and test corpus
     else:
-        return [pair for pair in pairs if (length_check(pair) and tag_check(pair))]
+        return [pair for pair in pairs if (length_check(pair) and tag_check(pair,tag))]
 
 
 # Using the functions defined above, return a populated voc object and pairs list
@@ -254,14 +254,14 @@ def loadTrainData(corpus_name, datafile):
     return voc, tag, pairs
 
 # Using the functions defined above, return pairs list
-def loadDevData(datafile):
+def loadDevData(datafile, tag):
     print("Start preparing dev data ...")
     pairs = readPairs(datafile)
     print("Read {!s} sentence pairs".format(len(pairs)))
-    pairs = filterPairs(pairs, train=False)
+    pairs = filterPairs(pairs, tag)
     print("Trimmed to {!s} sentence pairs".format(len(pairs)))
     print("Counting words...")
-    return voc, tag, pairs
+    return pairs
 
 
 def trimRareWords(voc, pairs, MIN_COUNT):
