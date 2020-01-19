@@ -344,6 +344,11 @@ def batch2TrainData(voc, tag, pair_batch):
     return inp, lengths, output, mask, max_target_len
 
 
+def Set_DataLoader(voc, tag, pairs, batch_size = 64):
+    total = len(pairs)
+    n_batch = total//batch_size+1
+    ds_loader = [batch2TrainData(voc,tag, pairs[i*batch_size:(i+1)*batch_size]) for i in range(n_batch)]
+    return ds_loader
 
 
 if __name__ == '__main__':

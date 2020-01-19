@@ -10,7 +10,7 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-criterion = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss().to(device)
 
 def test(model, voc, tag, sentence, max_length=MAX_LENGTH):
     ### Format input sentence as a batch
@@ -104,15 +104,8 @@ def train(input_variable, lengths, target_variable, mask, model,embedding,model_
     return loss
 
 
-def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embedding,rnn_n_layers, save_dir, n_iteration, batch_size, print_every, save_every, clip,
+def trainIters(model_name, train_loader, dev_loader, model, model_optimizer, embedding,rnn_n_layers, save_dir, n_iteration, batch_size, print_every, save_every, clip,
                corpus_name, loadFilename=None):
-    pairs_train = pairs_dct['train']
-    pairs_dev = pairs_dct['dev']
-    # Load batches for each iteration
-    training_batches = [batch2TrainData(voc, tag, [random.choice(pairs_train) for _ in range(batch_size)])
-                        for _ in range(n_iteration)]
-    dev_batches = [batch2TrainData(voc, tag, [random.choice(pairs_dev) for _ in range(batch_size)])
-                        for _ in range(n_iteration)]
 
     # Initializations
     print('Initializing ...')
@@ -123,25 +116,26 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
     if loadFilename:
         start_iteration = checkpoint['iteration'] + 1
 
-    criterion = torch.nn.CrossEntropyLoss().to(device)
+    # criterion = torch.nn.CrossEntropyLoss().to(device)
     # Training loop
     print("Training...")
     for iteration in range(start_iteration, n_iteration + 1):
-        training_batch = training_batches[iteration - 1]
-        dev_batch = dev_batches[iteration - 1]
-        # Extract fields from batch
-        input_variable, lengths, target_variable, mask, max_target_len = training_batch
+        print_loss = 0
+        print_loss_dev = 0
+        n_batch = len(train_loader)
+        for i_batch, train_batch in enumerate(train_loader):
+            input_variable, lengths, target_variable, mask, max_target_len = train_batch
+            # Run a training iteration with batch
+            model.train()
+            loss = train(input_variable, lengths, target_variable, mask, model,embedding, model_optimizer, clip)
+            print("Iteration: {0}; Batch: {1}/{2}; Average batch loss: {3:.4f}".format(iteration,i_batch,n_batch,loss))
+            print_loss += loss
 
-        # Run a training iteration with batch
-        model.train()
-        loss = train(input_variable, lengths, target_variable, mask, model,embedding, model_optimizer, clip)
-        print_loss += loss
-
-        # Run a evaluate iteration with batch
-        input_variable, lengths, target_variable, mask, max_target_len = dev_batch
-        model.eval()
-        loss_dev = evaluate(input_variable, lengths, target_variable, mask, model)
-        print_loss_dev += loss_dev
+            for dev_batch in dev_loader:
+                input_variable, lengths, target_variable, mask, max_target_len = dev_batch
+                model.eval()
+                loss_dev = evaluate(input_variable, lengths, target_variable, mask, model)
+                print_loss_dev += loss_dev
 
         # Print progress
         if iteration % print_every == 0:
@@ -150,9 +144,6 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
             print("Iteration: {}; Percent complete: {:.1f}%; Average train loss: {:.4f}, Average dev loss: {:.4f}".format(iteration,
                                                                                           iteration / n_iteration * 100,
                                                                                           print_loss_avg, print_loss_dev_avg))
-            print_loss = 0
-            print_loss_dev = 0
-
         # Save best model
         if print_loss_dev_avg - best_loss < 0.0:
             print("validation loss {0} is better than {1}, saving checkpoint....".format(print_loss_dev_avg,best_loss))
@@ -261,8 +252,8 @@ if __name__ == '__main__':
     embedding = nn.Embedding(voc.num_words, hidden_size)
 
     # Initialize RNN models
-    model = AttnRNN(attn_model,hidden_size, output_size, embedding, rnn_n_layers, dropout)
-    # model = BiRNN_tagger(hidden_size, output_size, embedding, rnn_n_layers, dropout)
+    # model = AttnRNN(attn_model,hidden_size, output_size, embedding, rnn_n_layers, dropout)
+    model = BiRNN_tagger(hidden_size, output_size, embedding, rnn_n_layers, dropout)
     # Load model if a loadFilename is provided
     if args.load_model:
         # Set checkpoint to load from; set to None if starting from scratch
@@ -318,10 +309,9 @@ if __name__ == '__main__':
 
     # Run training iterations
     print("Starting Training!")
-    pairs_dct = {}
-    pairs_dct['train'] = pairs
-    pairs_dct['dev'] =pairs_dev
-    trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, batch_size,
+    train_loader = Set_DataLoader(voc, tag, pairs)
+    dev_loader = Set_DataLoader(voc, tag, pairs_dev)
+    trainIters(model_name, train_loader, dev_loader, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, batch_size,
                print_every, save_every, clip, corpus_name, loadFilename=None)
     #
     model.eval()
