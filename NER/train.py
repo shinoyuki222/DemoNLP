@@ -5,24 +5,70 @@ from torch import optim
 from consts import *
 from model import *
 from dataloader import *
-from model import AttnRNN
+from model import BiRNN_tagger
 import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+criterion = nn.CrossEntropyLoss()
 
+def test(model, voc, tag, sentence, max_length=MAX_LENGTH):
+    ### Format input sentence as a batch
+    # words -> indexes
+    indexes_batch = [indexesFromSentence(voc, sentence)]
+    # Create lengths tensor
+    lengths = torch.tensor([len(indexes) for indexes in indexes_batch])
+    # Transpose dimensions of batch to match models' expectations
+    input_batch = torch.LongTensor(indexes_batch).transpose(0, 1)
+    # Use appropriate device
+    input_batch = input_batch.to(device)
+    lengths = lengths.to(device)
+    # Decode sentence with searcher
+    output = model(input_batch, lengths)
+    # print(output.shape)
+    # find max scores and token idex
+    token_scores, token_indexes = torch.max(output[:,:,1:], dim=2)
+    # indexes -> words
+    decoded_words = [tag.index2tag[token_index.item()+1] for token_index in token_indexes]
+    return decoded_words
+
+
+def testInput(model, voc, tag):
+    print("==============get=================")
+    print("Type q or quit to quit chat")
+    print("===========================================")
+    input_sentence = ''
+    while (1):
+        try:
+            # Get input sentence
+            input_sentence = input('> ')
+            # Check if it is quit case
+            if input_sentence == 'q' or input_sentence == 'quit': break
+            # Normalize sentence
+            input_sentence = text_process(input_sentence)
+            # Evaluate sentence
+            output_words = test(model, voc, tag, input_sentence)
+            # Format and print response sentence
+            output_words[:] = [x for x in output_words if x != 'PAD']
+            print('Entity tags:', ' '.join(output_words))
+
+        except KeyError:
+            print("Error: Encountered unknown word.")
 
 def evaluate(input_variable, lengths, target_variable, mask, model):
+    with torch.no_grad():
+        # Set device options
+        # criterion = nn.CrossEntropyLoss()
+        # criterion = nn.NLLLoss()
+        input_variable = input_variable.to(device)
+        lengths = lengths.to(device)
+        target_variable = target_variable.to(device)
+        mask = mask.to(device)
 
-    # Set device options
-    input_variable = input_variable.to(device)
-    lengths = lengths.to(device)
-    target_variable = target_variable.to(device)
-    mask = mask.to(device)
-
-    # Forward pass through model
-    output = model(input_variable, lengths)
-    loss = NLLLoss(output,target_variable, mask)
+        # Forward pass through model
+        output = model(input_variable, lengths)
+        output = output.view(-1, output.shape[-1])
+        loss = criterion(output, target_variable.view(-1))
 
     return loss
 
@@ -36,12 +82,17 @@ def train(input_variable, lengths, target_variable, mask, model,embedding,model_
     target_variable = target_variable.to(device)
     mask = mask.to(device)
 
-
+    # criterion = nn.NLLLoss()
     # Forward pass through model
-    output= model(input_variable, lengths)
-    loss = NLLLoss(output,target_variable,mask)
+    output = model(input_variable, lengths)
+    output = output.view(-1, output.shape[-1])
+    # loss = NLLLoss(output, target_variable, mask)
+
+    # intents = intents.flatten().to(self.device)
+    loss = criterion(output, target_variable.view(-1))
 
     # Perform backpropatation
+    model_optimizer.zero_grad()
     loss.backward()
 
     # Clip gradients: gradients are modified in place
@@ -106,7 +157,7 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
         if print_loss_dev_avg - best_loss < 0.0:
             print("validation loss {0} is better than {1}, saving checkpoint....".format(print_loss_dev_avg,best_loss))
             best_loss = print_loss_dev_avg
-            directory = os.path.join(save_dir, corpus_name,model_name,
+            directory = os.path.join(save_dir, corpus_name, model_name,
                                      '{}_{}'.format(rnn_n_layers, hidden_size))
             if not os.path.exists(directory):
                 os.makedirs(directory)
@@ -117,7 +168,7 @@ def trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer, embeddin
                 'loss': loss,
                 'loss_dev': loss_dev,
                 'embedding': embedding.state_dict()
-            }, os.path.join(directory, '.tar'.format(iteration, 'BestModel')))
+            }, os.path.join(directory, '{}.tar'.format('BestModel')))
 
         # Save checkpoint
         if (iteration % save_every == 0):
@@ -141,6 +192,13 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--corpus', action='store', dest='corpus_name', default='MSRA',help='Store corpus name')
     parser.add_argument('-a', '--attn_model', action='store', dest='attn_model', default='concat',
                         help='Store attention mode dot concat or general')
+    parser.add_argument('-l', '--load', action="store_true", dest='load_model', default=False, help='Load saved model')
+    parser.add_argument('-cp', '--checkpoint', action="store", dest='checkpoint_iter', default=-1, type=int,
+                        help='Set loaded checkpoint_iter')
+    parser.add_argument('-xt', '--train', action="store_true", dest='skip_train', default=False,
+                        help='Skip train model')
+    parser.add_argument('-xe', '--evaluate', action="store_true", dest='skip_evaluate', default=False,
+                        help='Skip evaluate model')
 
     parser.add_argument('-hs', '--hidden_size', action="store", dest='hidden_size', default=500, type=int,
                         help='Set hidden_size')
@@ -151,7 +209,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--batch_size', action="store", dest='batch_size', default=64, type=int,
                         help='Set batch_size')
 
-    parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=4000, type=int,
+    parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=1, type=int,
                         help='Set n_iteration')
 
     parser.add_argument('-s', '--save_every', action="store", dest='save_every', default=500, type=int,
@@ -167,6 +225,13 @@ if __name__ == '__main__':
     datafile_train = os.path.join(corpus, "train")
     datafile_dev = os.path.join(corpus, "val")
     print("corpus_name: {0}, corpus = {1}, datafile_train = {2}".format(corpus_name, corpus, datafile_train))
+
+    if args.load_model:
+        print("load_model: {0}, checkpoint = {1}".format(args.load_model, args.checkpoint_iter))
+
+    if args.load_model == False and args.skip_train:
+        print("load_model: {0}, skip_train = {1}".format(args.load_model, args.skip_train))
+        print("!!!Warning!!!\nPlease using -l to load a trained model, otherwite using a random model.")
 
     # Load/Assemble voc and pairs
     voc, tag, pairs = loadTrainData(corpus_name, datafile_train)
@@ -194,16 +259,43 @@ if __name__ == '__main__':
     print('Building model ...')
     # Initialize word embeddings
     embedding = nn.Embedding(voc.num_words, hidden_size)
-    # Initialize attentionRNN models
+
+    # Initialize RNN models
     model = AttnRNN(attn_model,hidden_size, output_size, embedding, rnn_n_layers, dropout)
+    # model = BiRNN_tagger(hidden_size, output_size, embedding, rnn_n_layers, dropout)
+    # Load model if a loadFilename is provided
+    if args.load_model:
+        # Set checkpoint to load from; set to None if starting from scratch
+        checkpoint_iter = args.checkpoint_iter
+        if args.checkpoint_iter < 0:
+            loadFilename  = os.path.join(save_dir, corpus_name, model_name,
+                                     '{}_{}'.format(rnn_n_layers, hidden_size),
+                                    '{}.tar'.format("BestModel"))
+        else:
+            loadFilename = os.path.join(save_dir, corpus_name, model_name,
+                                     '{}_{}'.format(rnn_n_layers, hidden_size),
+                                    '{}_checkpoint.tar'.format(checkpoint_iter))
+        # If loading on same machine the model was trained on
+        # checkpoint = torch.load(loadFilename)
+        # If loading a model trained on GPU to CPU
+        # checkpoint = torch.load(loadFilename, map_location=torch.device('cpu'))
+
+        checkpoint = torch.load(loadFilename, map_location=torch.device(device))
+        iteration = checkpoint['iteration']
+        print("Load interation {}".format(iteration))
+        model_sd = checkpoint['model']
+        model_opt_sd = checkpoint['model_opt']
+        embedding_sd = checkpoint['embedding']
+        embedding.load_state_dict(embedding_sd)
+        model.load_state_dict(model_sd)
     # Use appropriate device
     model = model.to(device)
     print('Models built and ready to go!')
 
     clip = 50.0
-    teacher_forcing_ratio = 1.0
+    # teacher_forcing_ratio = 1.0
     learning_rate = 0.0001
-    decoder_learning_ratio = 5.0
+    # decoder_learning_ratio = 5.0
     n_iteration = args.n_iteration
     print_every = args.print_every
     save_every = args.save_every
@@ -214,7 +306,8 @@ if __name__ == '__main__':
     # Initialize optimizers
     print('Building optimizers ...')
     model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
+    if args.load_model:
+        model_optimizer.load_state_dict(model_opt_sd)
 
     # If you have cuda, configure cuda to call
     if device == 'cuda':
@@ -229,4 +322,7 @@ if __name__ == '__main__':
     pairs_dct['train'] = pairs
     pairs_dct['dev'] =pairs_dev
     trainIters(model_name, voc, tag, pairs_dct, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, batch_size,
-               print_every, save_every, clip, corpus_name,loadFilename=None)
+               print_every, save_every, clip, corpus_name, loadFilename=None)
+    #
+    model.eval()
+    testInput(model, voc, tag)
