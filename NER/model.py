@@ -61,7 +61,7 @@ class Attn(nn.Module):
         if self.method == 'general':
             self.attn = nn.Linear(self.hidden_size, hidden_size)
         elif self.method == 'concat':
-            self.attn = nn.Linear(self.hidden_size * 3, hidden_size)
+            self.attn = nn.Linear(self.hidden_size * 2, hidden_size)
             self.v = nn.Parameter(torch.FloatTensor(hidden_size))
 
     def dot_score(self, hidden, encoder_output):
@@ -95,6 +95,41 @@ class Attn(nn.Module):
         return F.softmax(attn_energies, dim=1).unsqueeze(1)
 
 
+# Bidirectional recurrent neural network (many-to-many)
+class BiRNN_tagger(nn.Module):
+    def __init__(self, hidden_size, output_size, embedding, n_layers=1, dropout=0):
+        super(BiRNN_tagger, self).__init__()
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.hidden_size = hidden_size
+        self.embedding = embedding
+        self.n_layers = n_layers
+        self.num_classes = output_size
+        self.dropout = dropout
+
+        self.lstm = nn.LSTM(self.hidden_size, self.hidden_size//2, self.n_layers, batch_first=False,
+                            bidirectional=True)
+        self.fc_out = nn.Linear(self.hidden_size, self.num_classes) # 2 for bidirection
+        # self.word_embeddings = nn.Embedding(self.vocab_size, self.embedding_dim).to(self.device)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, input_seq, input_lengths, hidden=None):
+        # Convert word indexes to embeddings
+        embedded = self.embedding(input_seq)
+        # Set initial states
+        h0 = torch.zeros(self.n_layers * 2, input_seq.size(1), self.hidden_size//2).to(self.device)  # 2 for bidirection
+        c0 = torch.zeros(self.n_layers * 2, input_seq.size(1), self.hidden_size//2).to(self.device)
+        # embeds = self.word_embeddings(x.transpose(0, 1))
+        packed_input = nn.utils.rnn.pack_padded_sequence(embedded, input_lengths)
+        # Forward propagate LSTM
+        packed_output, hidden = self.lstm(packed_input,(h0, c0))  # out: tensor of shape (batch_size, seq_length, hidden_size*2)
+        output, _ = nn.utils.rnn.pad_packed_sequence(packed_output)
+        # Decode the hidden state of the last time step
+        output = self.dropout(output)
+        output = self.fc_out(output)
+        output = F.softmax(output, dim=2)
+        return output
+
+
 class AttnRNN(nn.Module):
     def __init__(self, attn_model, hidden_size, output_size, embedding, n_layers=1, dropout=0):
         super(AttnRNN, self).__init__()
@@ -107,10 +142,10 @@ class AttnRNN(nn.Module):
         self.dropout = dropout
 
         # Define layers
-        self.encoderrnn = EncoderRNN(hidden_size, embedding, n_layers, dropout)
-        self.concat = nn.Linear(hidden_size * 3, hidden_size)
+        self.encoderrnn = EncoderRNN(hidden_size//2, embedding, n_layers, dropout)
+        self.concat = nn.Linear(hidden_size * 2, hidden_size)
         self.out = nn.Linear(hidden_size, output_size)
-        self.gru = nn.GRU(hidden_size, hidden_size, n_layers,
+        self.gru = nn.GRU(hidden_size, hidden_size//2, n_layers,
                           dropout=(0 if n_layers == 1 else dropout), bidirectional=True)
 
         self.attn = Attn(attn_model, hidden_size)
@@ -135,14 +170,13 @@ class AttnRNN(nn.Module):
         # Concatenate weighted context vector and GRU output using Luong eq. 5
         # rnn_output = rnn_output.squeeze(0)
         # rnn_output_weighted = rnn_output_weighted.squeeze(1)
-        #
 
         concat_input = torch.cat((embedded, rnn_output_weighted.transpose(0,1)), 2)
         concat_output = torch.tanh(self.concat(concat_input))
         # Predict next word using Luong eq. 6
         output = self.out(concat_output)
-        output = F.softmax(output, dim=1)
-        # print("outputshape ",output.shape)
+        output = F.softmax(output, dim=2)
+        # print("output shape", output.shape)
         # Return output and final hidden state
         return output
 
