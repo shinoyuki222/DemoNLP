@@ -240,9 +240,9 @@ def filterPairs(pairs, tag=None):
 
 
 # Using the functions defined above, return a populated voc object and pairs list
-def loadTrainData(corpus_name, datafile):
+def loadTrainData(corpus_name, datafile, split =True):
     print("Start preparing training data ...")
-    voc, tag, pairs = readVocs(datafile, corpus_name)
+    voc, tag, pairs = readVocs(datafile, corpus_name, split =split)
     print("Read {!s} sentence pairs".format(len(pairs)))
     pairs = filterPairs(pairs)
     print("Trimmed to {!s} sentence pairs".format(len(pairs)))
@@ -254,9 +254,9 @@ def loadTrainData(corpus_name, datafile):
     return voc, tag, pairs
 
 # Using the functions defined above, return pairs list
-def loadDevData(datafile, tag):
+def loadDevData(datafile, tag, split =True):
     print("Start preparing dev data ...")
-    pairs = readPairs(datafile)
+    pairs = readPairs(datafile, split =split)
     print("Read {!s} sentence pairs".format(len(pairs)))
     pairs = filterPairs(pairs, tag)
     print("Trimmed to {!s} sentence pairs".format(len(pairs)))
