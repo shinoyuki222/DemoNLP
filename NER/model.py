@@ -29,24 +29,6 @@ def SetCriterion(tag=None, tag_ignore=None, weight = None,size_average=None, ign
                                reduce=reduce,
                                reduction=reduction)
 
-
-def maskNLLLoss(inp, target, mask):
-    nTotal = mask.sum()
-    crossEntropy = -torch.log(torch.gather(inp, 1, target.view(-1, 1)).squeeze(1))
-    loss = crossEntropy.masked_select(mask).mean()
-    loss = loss.to(device)
-    return loss, nTotal.item()
-
-def NLLLoss(inp, target, mask):
-    dim =inp.size(2)
-    mask = mask.unsqueeze(2).repeat(1,1,dim)
-    target_one_hot = torch.nn.functional.one_hot(target, num_classes = dim)
-    crossEntropy = -torch.log(torch.gather(inp, 1, target_one_hot))
-    loss = crossEntropy.masked_select(mask).mean()
-    loss = loss.to(device)
-    return loss
-
-
 class EncoderRNN(nn.Module):
     def __init__(self, hidden_size, embedding, n_layers=1, dropout=0):
         super(EncoderRNN, self).__init__()

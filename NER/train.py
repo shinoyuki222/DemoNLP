@@ -104,16 +104,14 @@ def train(input_variable, lengths, target_variable, criterion, mask, model,model
 
 
 def trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer, embedding,rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip,
-               corpus_name, loadFilename=None):
+               corpus_name, start_iteration = 0):
 
     # Initializations
     print('Initializing ...')
-    start_iteration = 1
+    start_iteration += 1
     print_loss = 0
     print_loss_dev = 0
     best_loss = float('Inf')
-    if loadFilename:
-        start_iteration = checkpoint['iteration'] + 1
 
     # criterion = torch.nn.CrossEntropyLoss().to(device)
     # Training loop
@@ -287,6 +285,13 @@ if __name__ == '__main__':
     learning_rate = 0.0001
     # decoder_learning_ratio = 5.0
     n_iteration = args.n_iteration
+    #set start_iteration if load model
+    try:
+        iteration
+        start_iteration = iteration
+    except NameError:
+        start_iteration = 0
+
     print_every = args.print_every
     save_every = args.save_every
 
@@ -311,7 +316,7 @@ if __name__ == '__main__':
     train_loader = Set_DataLoader(voc, tag, pairs, batch_size = batch_size)
     dev_loader = Set_DataLoader(voc, tag, pairs_dev, batch_size = batch_size)
     criterion = SetCriterion(tag=tag, tag_ignore=['O'],ignore_index= PAD_token)
-    trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip, corpus_name, loadFilename=None)
+    trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip, corpus_name, start_iteration)
 
     model.eval()
     testInput(model, voc, tag)
