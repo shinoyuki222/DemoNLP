@@ -22,6 +22,7 @@ Other API needed:
     ```
 - re
 - unicodedata
+- tqdm
 
 ## Projects:
 - [FreeChat](https://github.com/shinoyuki222/PyTorch_NLP/tree/master/FreeChat)

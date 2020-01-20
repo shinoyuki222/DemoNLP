@@ -7,6 +7,8 @@ from model import *
 from dataloader import *
 from model import BiRNN_tagger
 import random
+from tqdm import tqdm
+# from time import sleep
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -117,63 +119,76 @@ def trainIters(model_name, train_loader, dev_loader, criterion, model, model_opt
     # Training loop
     print("Training...")
     for iteration in range(start_iteration, n_iteration + 1):
+        loss = 0
+        print_line = 'Iteration: {0}/{1}; Average batch loss: {2:.4f}; Progress'.format(iteration,n_iteration, loss)
         print_loss = 0
         print_loss_dev = 0
         n_batch = len(train_loader)
-        for i_batch, train_batch in enumerate(train_loader):
-            input_variable, lengths, target_variable, mask, max_target_len = train_batch
-            # Run a training iteration with batch
-            model.train()
-            loss = train(input_variable, lengths, target_variable, criterion, mask, model, model_optimizer, clip)
-            print("Iteration: {0}; Batch: {1}/{2}; Average batch loss: {3:.4f}".format(iteration,i_batch,n_batch,loss))
-            print_loss += loss
 
-            for dev_batch in dev_loader:
-                input_variable, lengths, target_variable, mask, max_target_len = dev_batch
-                model.eval()
-                loss_dev = evaluate(input_variable, lengths, target_variable, criterion, mask, model)
-                print_loss_dev += loss_dev
+        # show with tqdm
+        try:
+            with tqdm(range(n_batch)) as tqdm_t:
+                for i_batch, train_batch in zip(tqdm_t,train_loader):
+                    tqdm_t.set_description(print_line)
+                    tqdm_t.refresh() # to show immediately the update
+                    # sleep(0.01)
+                    input_variable, lengths, target_variable, mask, max_target_len = train_batch
+                    # Run a training iteration with batch
+                    model.train()
+                    loss = train(input_variable, lengths, target_variable, criterion, mask, model, model_optimizer, clip)
+                    print_line = 'Iteration: {0}/{1}; Average batch loss: {2:.4f}; Progress'.format(iteration,n_iteration, loss)
+                    # print("Iteration: {0}; Batch: {1}/{2}; Average batch loss: {3:.4f}".format(iteration,i_batch,n_batch,loss))
+                    print_loss += loss
 
-        # Print progress
-        if iteration % print_every == 0:
-            print_loss_avg = print_loss /n_batch/print_every
-            print_loss_dev_avg = print_loss_dev /n_batch/print_every
-            print("Iteration: {}; Percent complete: {:.1f}%; Average train loss: {:.4f}, Average dev loss: {:.4f}".format(iteration,
-                                                                                          iteration / n_iteration * 100,
-                                                                                          print_loss_avg, print_loss_dev_avg))
-        # Save best model
-        if print_loss_dev_avg - best_loss < 0.0:
-            print("validation loss {0} is better than {1}, saving checkpoint....".format(print_loss_dev_avg,best_loss))
-            best_loss = print_loss_dev_avg
-            directory = os.path.join(save_dir, corpus_name, model_name,
-                                     '{}_{}'.format(rnn_n_layers, hidden_size))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            torch.save({
-                'iteration': iteration,
-                'model': model.state_dict(),
-                'model_opt': model_optimizer.state_dict(),
-                'loss': loss,
-                'loss_dev': loss_dev,
-                'embedding': embedding.state_dict()
-            }, os.path.join(directory, '{}.tar'.format('BestModel')))
+                    for dev_batch in dev_loader:
+                        input_variable, lengths, target_variable, mask, max_target_len = dev_batch
+                        model.eval()
+                        loss_dev = evaluate(input_variable, lengths, target_variable, criterion, mask, model)
+                        print_loss_dev += loss_dev
 
-        # Save checkpoint
-        if (iteration % save_every == 0):
-            directory = os.path.join(save_dir, corpus_name, model_name,
-                                     '{}_{}'.format(rnn_n_layers, hidden_size))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            torch.save({
-                'iteration': iteration,
-                'model': model.state_dict(),
-                'model_opt': model_optimizer.state_dict(),
-                'loss': loss,
-                'loss_dev': loss_dev,
-                'embedding': embedding.state_dict()
-            }, os.path.join(directory, '{}_{}.tar'.format(iteration, 'checkpoint')))
+                # Print progress
+                if iteration % print_every == 0:
+                    print_loss_avg = print_loss /n_batch/print_every
+                    print_loss_dev_avg = print_loss_dev /n_batch/print_every
+                    print("Iteration: {}; Percent complete: {:.1f}%; Average train loss: {:.4f}, Average dev loss: {:.4f}".format(iteration,
+                                                                                                  iteration / n_iteration * 100,
+                                                                                                  print_loss_avg, print_loss_dev_avg))
+                # Save best model
+                if print_loss_dev_avg - best_loss < 0.0:
+                    print("validation loss {0} is better than {1}, saving checkpoint....".format(print_loss_dev_avg,best_loss))
+                    best_loss = print_loss_dev_avg
+                    directory = os.path.join(save_dir, corpus_name, model_name,
+                                             '{}_{}'.format(rnn_n_layers, hidden_size))
+                    if not os.path.exists(directory):
+                        os.makedirs(directory)
+                    torch.save({
+                        'iteration': iteration,
+                        'model': model.state_dict(),
+                        'model_opt': model_optimizer.state_dict(),
+                        'loss': loss,
+                        'loss_dev': loss_dev,
+                        'embedding': embedding.state_dict()
+                    }, os.path.join(directory, '{}.tar'.format('BestModel')))
 
+                # Save checkpoint
+                if (iteration % save_every == 0):
+                    directory = os.path.join(save_dir, corpus_name, model_name,
+                                             '{}_{}'.format(rnn_n_layers, hidden_size))
+                    if not os.path.exists(directory):
+                        os.makedirs(directory)
+                    torch.save({
+                        'iteration': iteration,
+                        'model': model.state_dict(),
+                        'model_opt': model_optimizer.state_dict(),
+                        'loss': loss,
+                        'loss_dev': loss_dev,
+                        'embedding': embedding.state_dict()
+                    }, os.path.join(directory, '{}_{}.tar'.format(iteration, 'checkpoint')))
 
+        except KeyboardInterrupt:
+            tqdm_t.close()
+            raise
+        tqdm_t.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -229,8 +244,8 @@ if __name__ == '__main__':
         print(pair)
     # Trim voc and pairs
     voc, pairs = trimRareWords(voc, pairs, MIN_COUNT)
-    # save_static_dict(voc, tag, save_dir)
-    # voc,tag = load_static_dict(save_dir,corpus_name)
+    save_static_dict(voc, tag, save_dir)
+    voc, tag = load_static_dict(save_dir,corpus_name)
 
     # load dev data for evaluate model
     pairs_dev = loadDevData(datafile_dev,tag)
