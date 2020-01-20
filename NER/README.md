@@ -1,4 +1,4 @@
-# Pytorch NLP - FreeChat
+# Pytorch NLP - Name Entity Recognition
 [Main repo](https://github.com/shinoyuki222/PyTorch_NLP)
 
 Model based on paper:
