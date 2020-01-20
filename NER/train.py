@@ -126,7 +126,7 @@ def trainIters(model_name, train_loader, dev_loader, criterion, model, model_opt
             input_variable, lengths, target_variable, mask, max_target_len = train_batch
             # Run a training iteration with batch
             model.train()
-            loss = train(input_variable, lengths, target_variable, criterion, mask, model,embedding, model_optimizer, clip)
+            loss = train(input_variable, lengths, target_variable, criterion, mask, model, model_optimizer, clip)
             print("Iteration: {0}; Batch: {1}/{2}; Average batch loss: {3:.4f}".format(iteration,i_batch,n_batch,loss))
             print_loss += loss
 
@@ -311,8 +311,7 @@ if __name__ == '__main__':
     train_loader = Set_DataLoader(voc, tag, pairs, batch_size = batch_size)
     dev_loader = Set_DataLoader(voc, tag, pairs_dev, batch_size = batch_size)
     criterion = SetCriterion(tag=tag, tag_ignore=['O'],ignore_index= PAD_token)
-    trainIters(model_name, train_loader, dev_loader,criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration,
-               print_every, save_every, clip, corpus_name, loadFilename=None)
-    #
+    trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip, corpus_name, loadFilename=None)
+
     model.eval()
     testInput(model, voc, tag)
