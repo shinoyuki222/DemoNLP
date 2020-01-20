@@ -47,6 +47,7 @@ def testInput(model, voc, tag):
             if input_sentence == 'q' or input_sentence == 'quit': break
             # Normalize sentence
             input_sentence = text_process(input_sentence)
+            print(input_sentence)
             # Evaluate sentence
             output_words = test(model, voc, tag, input_sentence)
             # Format and print response sentence
@@ -195,7 +196,10 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--corpus', action='store', dest='corpus_name', default='MSRA',help='Store corpus name')
     parser.add_argument('-a', '--attn_model', action='store', dest='attn_model', default='concat',
                         help='Store attention mode dot concat or general')
-    parser.add_argument('-l', '--load', action="store_true", dest='load_model', default=False, help='Load saved model')
+    parser.add_argument('-lm', '--load_model', action="store_true", dest='load_model', default=False, help='Load saved model')
+    parser.add_argument('-ld', '--load_dct', action="store_true", dest='load_dct', default=False,
+                        help='Load saved dct including tag and voc')
+
     parser.add_argument('-cp', '--checkpoint', action="store", dest='checkpoint_iter', default=-1, type=int,
                         help='Set loaded checkpoint_iter')
     parser.add_argument('-xt', '--train', action="store_true", dest='skip_train', default=False,
@@ -212,7 +216,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--batch_size', action="store", dest='batch_size', default=64, type=int,
                         help='Set batch_size')
 
-    parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=1, type=int,
+    parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=100, type=int,
                         help='Set n_iteration')
 
     parser.add_argument('-s', '--save_every', action="store", dest='save_every', default=1, type=int,
@@ -231,25 +235,30 @@ if __name__ == '__main__':
 
     if args.load_model:
         print("load_model: {0}, checkpoint = {1}".format(args.load_model, args.checkpoint_iter))
-
     if args.load_model == False and args.skip_train:
         print("load_model: {0}, skip_train = {1}".format(args.load_model, args.skip_train))
-        print("!!!Warning!!!\nPlease using -l to load a trained model, otherwite using a random model.")
+        print("Loading Best Trained model\nPlease using -l to load a specific trained model.")
 
-    # Load/Assemble voc and pairs
-    voc, tag, pairs = loadTrainData(corpus_name, datafile_train)
-    # Print some pairs to validate
-    print("\npairs:")
-    for pair in pairs[:10]:
-        print(pair)
-    # Trim voc and pairs
-    voc, pairs = trimRareWords(voc, pairs, MIN_COUNT)
-    save_static_dict(voc, tag, save_dir)
-    voc, tag = load_static_dict(save_dir,corpus_name)
 
-    # load dev data for evaluate model
-    pairs_dev = loadDevData(datafile_dev,tag)
 
+    # set dictionary and pair
+    if args.skip_train:
+        voc, tag = load_static_dict(save_dir, corpus_name)
+    elif args.load_dct:
+        voc, tag = load_static_dict(save_dir, corpus_name)
+        pairs_train = loadDevData(datafile_train, tag)
+        pairs_dev = loadDevData(datafile_dev, tag)
+    else:
+        # Load/Assemble voc and pairs
+        voc, tag, pairs = loadTrainData(corpus_name, datafile_train)
+        # Print some pairs to validate
+        print("\npairs:")
+        for pair in pairs[:10]:
+            print(pair)
+        # Trim voc and pairs
+        voc, pairs = trimRareWords(voc, pairs, MIN_COUNT)
+        save_static_dict(voc, tag, save_dir)
+        pairs_dev = loadDevData(datafile_dev, tag)
 
     # Configure models
     model_name = 'NER_model'
@@ -266,12 +275,15 @@ if __name__ == '__main__':
     # Initialize RNN models
     # model = AttnRNN(attn_model,hidden_size, output_size, embedding, rnn_n_layers, dropout)
     model = BiRNN_tagger(hidden_size, output_size, embedding, rnn_n_layers, dropout)
+
+
+
     # Load model if a loadFilename is provided
     if args.load_model:
         # Set checkpoint to load from; set to None if starting from scratch
         checkpoint_iter = args.checkpoint_iter
         if args.checkpoint_iter < 0:
-            loadFilename  = os.path.join(save_dir, corpus_name, model_name,
+            loadFilename = os.path.join(save_dir, corpus_name, model_name,
                                      '{}_{}'.format(rnn_n_layers, hidden_size),
                                     '{}.tar'.format("BestModel"))
         else:
@@ -295,43 +307,48 @@ if __name__ == '__main__':
     model = model.to(device)
     print('Models built and ready to go!')
 
-    clip = 50.0
-    # teacher_forcing_ratio = 1.0
-    learning_rate = 0.0001
-    # decoder_learning_ratio = 5.0
-    n_iteration = args.n_iteration
-    #set start_iteration if load model
-    try:
-        iteration
-        start_iteration = iteration
-    except NameError:
-        start_iteration = 0
 
-    print_every = args.print_every
-    save_every = args.save_every
+    # Train model
+    if args.skip_train == False:
+        clip = 50.0
+        # teacher_forcing_ratio = 1.0
+        learning_rate = 0.0001
+        # decoder_learning_ratio = 5.0
+        n_iteration = args.n_iteration
+        #set start_iteration if load model
+        try:
+            iteration
+            start_iteration = iteration
+        except NameError:
+            start_iteration = 0
 
-    # Ensure dropout layers are in train mode
-    model.train()
+        print_every = args.print_every
+        save_every = args.save_every
 
-    # Initialize optimizers
-    print('Building optimizers ...')
-    model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    if args.load_model:
-        model_optimizer.load_state_dict(model_opt_sd)
+        # Ensure dropout layers are in train mode
+        model.train()
 
-    # If you have cuda, configure cuda to call
-    if device == 'cuda':
-        for state in model.state.values():
-            for k, v in state.items():
-                if isinstance(v, torch.Tensor):
-                    state[k] = v.cuda()
+        # Initialize optimizers
+        print('Building optimizers ...')
+        model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+        if args.load_model:
+            model_optimizer.load_state_dict(model_opt_sd)
 
-    # Run training iterations
-    print("Starting Training!")
-    train_loader = Set_DataLoader(voc, tag, pairs, batch_size = batch_size)
-    dev_loader = Set_DataLoader(voc, tag, pairs_dev, batch_size = batch_size)
-    criterion = SetCriterion(tag=tag, tag_ignore=['O'],ignore_index= PAD_token)
-    trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip, corpus_name, start_iteration)
+        # If you have cuda, configure cuda to call
+        if device == 'cuda':
+            for state in model.state.values():
+                for k, v in state.items():
+                    if isinstance(v, torch.Tensor):
+                        state[k] = v.cuda()
 
-    model.eval()
-    testInput(model, voc, tag)
+        # Run training iterations
+        print("Starting Training!")
+        train_loader = Set_DataLoader(voc, tag, pairs, batch_size = batch_size)
+        dev_loader = Set_DataLoader(voc, tag, pairs_dev, batch_size = batch_size)
+        criterion = SetCriterion(tag=tag, tag_ignore=['O'],ignore_index= PAD_token)
+        trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip, corpus_name, start_iteration)
+
+    # Test model
+    if args.skip_evaluate==False:
+        model.eval()
+        testInput(model, voc, tag)

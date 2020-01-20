@@ -102,6 +102,8 @@ def save_static_dict(voc,tag,save_dir):
     save_obj(tag.__dict__, tag_dir)
     print("voc and tag saved for corpus {}".format(corpus_name))
 
+def char2int(DCT):
+    return {int(k):v for k,v in DCT.items()}
 
 def load_static_dict(save_dir,corpus_name):
     _ = os.path.join(save_dir, corpus_name)
@@ -113,6 +115,8 @@ def load_static_dict(save_dir,corpus_name):
         tag = Tag(corpus_name)
         voc.__dict__ = load_obj(voc_dir)
         tag.__dict__ = load_obj(tag_dir)
+        voc.index2word = char2int(voc.index2word)
+        tag.index2tag = char2int(tag.index2tag)
     except KeyError:
         print("Not such dictionary")
     return voc, tag
