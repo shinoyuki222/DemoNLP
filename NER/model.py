@@ -15,7 +15,7 @@ def SetCriterion(tag=None, tag_ignore=None, weight = None,size_average=None, ign
         if tag:
             try:
                 for tag_i in tag_ignore:
-                    weight[tag.tag2index[tag_i]] = 0.0001
+                    weight[tag.tag2index[tag_i]] = 0.01
                 print("Training with weight:\n{}\n{}".format(tag.index2tag, weight.data))
             except KeyError:
                 print("Error: Encountered unknown tag.")

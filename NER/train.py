@@ -246,7 +246,7 @@ if __name__ == '__main__':
         voc, tag = load_static_dict(save_dir, corpus_name)
     elif args.load_dct:
         voc, tag = load_static_dict(save_dir, corpus_name)
-        pairs_train = loadDevData(datafile_train, tag)
+        pairs = loadDevData(datafile_train, tag)
         pairs_dev = loadDevData(datafile_dev, tag)
     else:
         # Load/Assemble voc and pairs
