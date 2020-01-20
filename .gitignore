@@ -31,3 +31,5 @@ NER/NER_data/MSRA/val/tags.txt
 NER/save/MSRA/Dicts/tag.json
 NER/save/MSRA/Dicts/voc.json
 NER/save/MSRA/NER_model/2_500/.tar
+NER/Untitled.ipynb
+NER/.ipynb_checkpoints/Untitled-checkpoint.ipynb

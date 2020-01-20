@@ -10,7 +10,6 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-criterion = nn.CrossEntropyLoss().to(device)
 
 def test(model, voc, tag, sentence, max_length=MAX_LENGTH):
     ### Format input sentence as a batch
@@ -55,7 +54,7 @@ def testInput(model, voc, tag):
         except KeyError:
             print("Error: Encountered unknown word.")
 
-def evaluate(input_variable, lengths, target_variable, mask, model):
+def evaluate(input_variable, lengths, target_variable, criterion, mask, model):
     with torch.no_grad():
         # Set device options
         # criterion = nn.CrossEntropyLoss()
@@ -64,6 +63,7 @@ def evaluate(input_variable, lengths, target_variable, mask, model):
         lengths = lengths.to(device)
         target_variable = target_variable.to(device)
         mask = mask.to(device)
+        criterion = criterion.to(device)
 
         # Forward pass through model
         output = model(input_variable, lengths)
@@ -72,7 +72,7 @@ def evaluate(input_variable, lengths, target_variable, mask, model):
 
     return loss
 
-def train(input_variable, lengths, target_variable, mask, model,embedding,model_optimizer,clip):
+def train(input_variable, lengths, target_variable, criterion, mask, model,model_optimizer,clip):
     # Zero gradients
     model_optimizer.zero_grad()
 
@@ -81,14 +81,13 @@ def train(input_variable, lengths, target_variable, mask, model,embedding,model_
     lengths = lengths.to(device)
     target_variable = target_variable.to(device)
     mask = mask.to(device)
+    criterion = criterion.to(device)
 
     # criterion = nn.NLLLoss()
     # Forward pass through model
     output = model(input_variable, lengths)
     output = output.view(-1, output.shape[-1])
-    # loss = NLLLoss(output, target_variable, mask)
 
-    # intents = intents.flatten().to(self.device)
     loss = criterion(output, target_variable.view(-1))
 
     # Perform backpropatation
@@ -104,7 +103,7 @@ def train(input_variable, lengths, target_variable, mask, model,embedding,model_
     return loss
 
 
-def trainIters(model_name, train_loader, dev_loader, model, model_optimizer, embedding,rnn_n_layers, save_dir, n_iteration, batch_size, print_every, save_every, clip,
+def trainIters(model_name, train_loader, dev_loader, criterion, model, model_optimizer, embedding,rnn_n_layers, save_dir, n_iteration, print_every, save_every, clip,
                corpus_name, loadFilename=None):
 
     # Initializations
@@ -127,20 +126,20 @@ def trainIters(model_name, train_loader, dev_loader, model, model_optimizer, emb
             input_variable, lengths, target_variable, mask, max_target_len = train_batch
             # Run a training iteration with batch
             model.train()
-            loss = train(input_variable, lengths, target_variable, mask, model,embedding, model_optimizer, clip)
+            loss = train(input_variable, lengths, target_variable, criterion, mask, model,embedding, model_optimizer, clip)
             print("Iteration: {0}; Batch: {1}/{2}; Average batch loss: {3:.4f}".format(iteration,i_batch,n_batch,loss))
             print_loss += loss
 
             for dev_batch in dev_loader:
                 input_variable, lengths, target_variable, mask, max_target_len = dev_batch
                 model.eval()
-                loss_dev = evaluate(input_variable, lengths, target_variable, mask, model)
+                loss_dev = evaluate(input_variable, lengths, target_variable, criterion, mask, model)
                 print_loss_dev += loss_dev
 
         # Print progress
         if iteration % print_every == 0:
-            print_loss_avg = print_loss / print_every
-            print_loss_dev_avg = print_loss_dev / print_every
+            print_loss_avg = print_loss /n_batch/print_every
+            print_loss_dev_avg = print_loss_dev /n_batch/print_every
             print("Iteration: {}; Percent complete: {:.1f}%; Average train loss: {:.4f}, Average dev loss: {:.4f}".format(iteration,
                                                                                           iteration / n_iteration * 100,
                                                                                           print_loss_avg, print_loss_dev_avg))
@@ -203,7 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=1, type=int,
                         help='Set n_iteration')
 
-    parser.add_argument('-s', '--save_every', action="store", dest='save_every', default=500, type=int,
+    parser.add_argument('-s', '--save_every', action="store", dest='save_every', default=1, type=int,
                         help='Set save_every')
     parser.add_argument('-p', '--print_every', action="store", dest='print_every', default=1, type=int,
                         help='Set print_every')
@@ -309,9 +308,10 @@ if __name__ == '__main__':
 
     # Run training iterations
     print("Starting Training!")
-    train_loader = Set_DataLoader(voc, tag, pairs)
-    dev_loader = Set_DataLoader(voc, tag, pairs_dev)
-    trainIters(model_name, train_loader, dev_loader, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration, batch_size,
+    train_loader = Set_DataLoader(voc, tag, pairs, batch_size = batch_size)
+    dev_loader = Set_DataLoader(voc, tag, pairs_dev, batch_size = batch_size)
+    criterion = SetCriterion(tag=tag, tag_ignore=['O'],ignore_index= PAD_token)
+    trainIters(model_name, train_loader, dev_loader,criterion, model, model_optimizer,embedding, rnn_n_layers, save_dir, n_iteration,
                print_every, save_every, clip, corpus_name, loadFilename=None)
     #
     model.eval()

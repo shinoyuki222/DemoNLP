@@ -1,15 +1,9 @@
 """Data loader"""
 
-# import random
-# import numpy as np
 import os
-# import sys
 import torch
-# from pytorch_pretrained_bert import BertTokenizer
-
 import argparse
 import unicodedata
-import string
 import re
 import json
 from consts import *
@@ -371,8 +365,6 @@ if __name__ == '__main__':
         print(pair)
     # Trim voc and pairs
     voc, pairs = trimRareWords(voc, pairs, MIN_COUNT)
-
-    save_static_dict(voc, tag, save_dir)
 
 
 
