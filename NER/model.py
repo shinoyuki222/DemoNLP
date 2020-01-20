@@ -8,19 +8,21 @@ from consts import *
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def SetCriterion(tag=None, tag_ignore=None, weight = None,size_average=None, ignore_index= -100, reduce=None, reduction='mean'):
+    print("Setting critetion...")
     if tag_ignore:
         if not weight:
             weight = torch.ones(tag.num_tags)
         if tag:
             try:
                 for tag_i in tag_ignore:
-                    weight[tag.tag2index[tag_i]] = 0.00001
+                    weight[tag.tag2index[tag_i]] = 0.0001
+                print("Training with weight:\n{}\n{}".format(tag.index2tag, weight.data))
             except KeyError:
                 print("Error: Encountered unknown tag.")
+
         else:
             print("no tag file given.")
-    print("Training with weight: {}".format(weight))
-    print("ignore idx: {}".format(ignore_index))
+    print("Ignore idx: {}".format(ignore_index))
     return nn.CrossEntropyLoss(weight=weight,
                                size_average=size_average,
                                ignore_index=ignore_index,
