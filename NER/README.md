@@ -59,7 +59,7 @@ python train.py
        $PT_BERT_DIR/pytorch_model.bin
        ```
 
-    + Copy the BERT parameters file `bert_config.json` and dictionary file `vocab.txt` to the directory `$PT_BERT_BASE_DIR`.
+    + Copy the BERT parameters file `bert_config.json` and dictionary file `vocab.txt` to the directory `$PT_BERT_DIR`.
 
        ```shell
        cp $TF_BERT_DIR/bert_config.json $PT_BERT_DIR/bert_config.json
