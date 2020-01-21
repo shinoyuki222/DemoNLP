@@ -6,20 +6,33 @@ Model based on paper:
 
 ```
 └── shinoyuki222/PyTorch_NLP/tree/master/NER
-    │
-    ├── NER_data
-    │   └── MSRA                # MSRA corpus
-    ├── saved                   # auto created after trainig
-    │   └── MSRA                     # named by corpus
-    │       ├── Dicts                # saved dict
-    │       │   ├── tag.json 
-    │       │   └── voc.json
-    │       └── NER_model                  # named by corpus                
-    │           └── 2_500            # saved checkpointer, which named by {rnn_n_layers}_{hiddin_size} 
-    │── consts.py
-    ├── dataloader.py     
-    │── model.py
-    └── train.py            
+        |-- README.md
+        |-- build_msra_dataset_tags.py
+        |-- NER_data
+        |   |-- MSRA
+        |   |   |-- msra_test_bio
+        |   |   |-- msra_train_bio
+        |-- main_BERT
+        |   |-- data_loader.py
+        |   |-- evaluate.py
+        |   |-- metrics.py
+        |   |-- train.py
+        |   |-- utils.py
+        |   |-- bert-base-chinese-pytorch
+        |   |   |-- bert_config.json
+        |   |   |-- pytorch_model.bin
+        |   |   |-- vocab.txt
+        |   |-- experiments
+        |       |-- base_model
+        |           |-- evaluate.log
+        |           |-- params.json
+        |           |-- train.log
+        |-- main_LSTM
+            |-- consts.py
+            |-- dataloader.py
+            |-- metric.py
+            |-- model.py
+            |-- train.py         
 ```
 #### To train the model
     python train.py
