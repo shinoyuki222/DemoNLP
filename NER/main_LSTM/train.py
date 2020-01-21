@@ -226,11 +226,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    save_dir = os.path.join("", "save")
+    save_dir = os.path.join("..", "save")
     corpus_name = args.corpus_name
-    corpus = os.path.join("NER_data", corpus_name)
+    corpus = os.path.join("..", "NER_data", corpus_name)
     datafile_train = os.path.join(corpus, "train")
-    datafile_dev = os.path.join(corpus, "val")
+    datafile_dev = os.path.join(corpus, "dev")
     print("corpus_name: {0}, corpus = {1}, datafile_train = {2}".format(corpus_name, corpus, datafile_train))
 
     if args.load_model:
