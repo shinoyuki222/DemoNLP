@@ -62,7 +62,7 @@ class DataLoader_test(object):
 
         tokens = self.tokenizer.tokenize(sent.strip())
         sentence.append(self.tokenizer.convert_tokens_to_ids(tokens))
-        return torch.tensor(sentence, dtype=torch.long)
+        return torch.tensor(sentence, dtype=torch.long).to(self.device)
 
 
 def test(model, sentence, params, mark='Eval', verbose=False):
@@ -129,7 +129,9 @@ if __name__ == '__main__':
     if params.n_gpu > 1 and args.multi_gpu:
         model = torch.nn.DataParallel(model)
 
-    logging.info("Starting evaluation...")
+    print("Starting Predict...")
+    print("Using `q` or `quit` to exist")
+        # logging.info("Starting evaluation...")
     while(1):
         try:
             # Get input sentence
@@ -146,5 +148,3 @@ if __name__ == '__main__':
             print('Entity tags:', ' '.join(pred_tags))
         except KeyError:
             print("Error: Encountered unknown word.")
-
-
