@@ -1,6 +1,6 @@
 {
     "full_finetuning": true,
-    "max_len": 180,
+    "max_len": 20,
 
     "learning_rate": 3e-5,
     "weight_decay": 0.01,
