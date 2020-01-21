@@ -75,8 +75,8 @@ Model based on paper:
        ```
 #### Train and evaluate your experiment
    if you use default parameters, just run
-   
-   ```python
+
+   ```shell
    cd main_BERT
    python train.py
    ```
