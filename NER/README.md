@@ -40,7 +40,7 @@ Model based on paper:
   python build_msra_dataset_tags.py
   ```
   will create NER_data/MSRA/train, NER_data/MSRA/dev, NER_data/MSRA/test, respectively.
-  
+
 ### To train the LSTM model
 
 #### Train and evaluate your experiment
@@ -88,8 +88,9 @@ Model based on paper:
    ```
 
    Or specify parameters on the command line
-
+   TBD
+<!-- 
    ```shell
    cd main_BERT
-   python train.py --data_dir data/msra --bert_model_dir bert-base-chinese-pytorch --model_dir experiments/base_model --multi_gpu
-   ```
+   python train.py --data_dir ../NER_data/MSRA --bert_model_dir bert-base-chinese-pytorch --model_dir experiments/base_model --multi_gpu
+   ``` -->
