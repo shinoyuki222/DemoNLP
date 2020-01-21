@@ -35,6 +35,12 @@ Model based on paper:
             |-- train.py         
 ```
 ### Prepared data
+  - Make sure you have *NER_data/MSRA/msra_test_bio* and *NER_data/MSRA/msra_train_bio*
+  ```shell
+  python build_msra_dataset_tags.py
+  ```
+  will create NER_data/MSRA/train, NER_data/MSRA/dev, NER_data/MSRA/test, respectively.
+  
 ### To train the LSTM model
 
 #### Train and evaluate your experiment
