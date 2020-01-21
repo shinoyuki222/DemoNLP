@@ -4,14 +4,16 @@
 
 ```
 └── shinoyuki222/PyTorch_NLP/tree/master/FreeChat
-    │
-    ├── chatbot_data
-    │   └── core_reduced      # simpy chat bot data
-    ├── save
-    │   └── chatbot_model     # saved model
-    │       └──core_reduced   # named by corpus
-    │           └──2-2_500    # named by {encoder_n_layers}-{decoder_n_layers}_{hiddin_size} 
-    └── pt_seq2seq_atten_train.py             
+    |-- README.md
+    |-- pt_seq2seq_atten_train.py
+    |-- chatbot_data
+    |   |-- core_reduced
+    |-- save
+        |-- chatbot_model
+            |-- core_reduced
+                |-- 2-2_500
+                    |-- 3500_checkpoint.tar
+                    |-- 4000_checkpoint.tar      
 ```
 #### To train the model
     python pt_seq2seq_atten_train.py
