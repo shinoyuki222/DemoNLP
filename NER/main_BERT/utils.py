@@ -5,7 +5,7 @@ import shutil
 
 import torch
 import numpy as np
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class Params():
     """Class that loads hyperparameters from a json file.
@@ -119,7 +119,7 @@ def load_checkpoint(checkpoint, model, optimizer=None):
     """
     if not os.path.exists(checkpoint):
         raise ("File doesn't exist {}".format(checkpoint))
-    checkpoint = torch.load(checkpoint)
+    checkpoint = torch.load(checkpoint,map_location=torch.device(device))
     # model.load_state_dict(checkpoint['state_dict'])
     model.load_state_dict(checkpoint['state_dict'])
 
