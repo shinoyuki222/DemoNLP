@@ -80,7 +80,7 @@ Model based on paper:
        cp $TF_BERT_DIR/vocab.txt $PT_BERT_DIR/vocab.txt
        ```
 #### Train and evaluate your experiment
-   if you use default parameters, just run
+- if you use default parameters, just run
 
    ```shell
    cd main_BERT
@@ -94,3 +94,18 @@ Model based on paper:
    cd main_BERT
    python train.py --data_dir ../NER_data/MSRA --bert_model_dir bert-base-chinese-pytorch --model_dir experiments/base_model --multi_gpu
    ``` -->
+- Evaluation on the test set
+Once you've run many experiments and selected your best model and hyperparameters based on the performance on the development set, you can finally evaluate the performance of your model on the test set.
+
+   if you use default parameters, just run
+
+   ```shell
+   python evaluate.py
+   ```
+
+- Prediction
+Selected best model and Predict tags.
+
+   ```shell
+   python test.py
+   ```
