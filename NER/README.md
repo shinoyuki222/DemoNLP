@@ -34,6 +34,7 @@ Model based on paper:
             |-- model.py
             |-- train.py         
 ```
+### Prepared data
 ### To train the LSTM model
 ```shell
 cd main_LSTM
@@ -49,17 +50,20 @@ python train.py
     + Execute the following command,  convert the TensorFlow checkpoint to a PyTorch dump.
 
        ```shell
-       export TF_BERT_BASE_DIR=/path/to/chinese_L-12_H-768_A-12
-       export PT_BERT_BASE_DIR=/path/to/NER-BERT-pytorch/bert-base-chinese-pytorch
+       export TF_BERT_DIR=/PATH_TO/chinese_L-12_H-768_A-12
+       export PT_BERT_DIR=/PATH_TO/NER-BERT-pytorch/bert-base-chinese-pytorch
        
-       pytorch_pretrained_bert convert_tf_checkpoint_to_pytorch $TF_BERT_BASE_DIR/bert_model.ckpt $TF_BERT_BASE_DIR/bert_config.json $PT_BERT_BASE_DIR/pytorch_model.bin
+       pytorch_pretrained_bert convert_tf_checkpoint_to_pytorch \
+       $TF_BERT_DIR/bert_model.ckpt \
+       $TF_BERT_DIR/bert_config.json \
+       $PT_BERT_DIR/pytorch_model.bin
        ```
 
     + Copy the BERT parameters file `bert_config.json` and dictionary file `vocab.txt` to the directory `$PT_BERT_BASE_DIR`.
 
        ```shell
-       cp $TF_BERT_BASE_DIR/bert_config.json $PT_BERT_BASE_DIR/bert_config.json
-       cp $TF_BERT_BASE_DIR/vocab.txt $PT_BERT_BASE_DIR/vocab.txt
+       cp $TF_BERT_DIR/bert_config.json $PT_BERT_DIR/bert_config.json
+       cp $TF_BERT_DIR/vocab.txt $PT_BERT_DIR/vocab.txt
        ```
 ####
 ```shell
