@@ -36,10 +36,18 @@ Model based on paper:
 ```
 ### Prepared data
 ### To train the LSTM model
-```shell
-cd main_LSTM
-python train.py
-```
+
+#### Train and evaluate your experiment
+- Train and test
+  ```shell
+  cd main_LSTM
+  python train.py
+  ```
+- Test only with best trained model
+  ```shell
+  cd main_LSTM
+  python train.py -xt -lm
+  ```
 ### To train the BERT-pretrained model
 #### Get BERT model for PyTorch
 - Install [pytorch-pretrained-bert](https://pypi.org/project/pytorch-pretrained-bert/):
@@ -65,8 +73,17 @@ python train.py
        cp $TF_BERT_DIR/bert_config.json $PT_BERT_DIR/bert_config.json
        cp $TF_BERT_DIR/vocab.txt $PT_BERT_DIR/vocab.txt
        ```
-####
-```shell
-cd main_BERT
-python train.py
-```
+#### Train and evaluate your experiment
+   if you use default parameters, just run
+   
+   ```python
+   cd main_BERT
+   python train.py
+   ```
+
+   Or specify parameters on the command line
+
+   ```shell
+   cd main_BERT
+   python train.py --data_dir data/msra --bert_model_dir bert-base-chinese-pytorch --model_dir experiments/base_model --multi_gpu
+   ```
