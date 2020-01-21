@@ -40,8 +40,8 @@ def save_dataset(dataset, save_dir):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     # Export the dataset
-    with open(os.path.join(save_dir, 'sentences.txt'), 'w') as file_sentences, \
-        open(os.path.join(save_dir, 'tags.txt'), 'w') as file_tags:
+    with open(os.path.join(save_dir, 'sentences.txt'), 'w', encoding='utf-8') as file_sentences, \
+        open(os.path.join(save_dir, 'tags.txt'), 'w', encoding='utf-8') as file_tags:
         for words, tags in dataset:
             file_sentences.write('{}\n'.format(' '.join(words)))
             file_tags.write('{}\n'.format(' '.join(tags)))
@@ -54,11 +54,11 @@ def build_tags(data_dir, tags_file):
     tags = set()
     for data_type in data_types:
         tags_path = os.path.join(data_dir, data_type, 'tags.txt')
-        with open(tags_path, 'r') as file:
+        with open(tags_path, 'r', encoding='utf-8') as file:
             for line in file:
                 tag_seq = filter(len, line.strip().split(' '))
                 tags.update(list(tag_seq))
-    with open(tags_file, 'w') as file:
+    with open(tags_file, 'w', encoding='utf-8') as file:
         file.write('\n'.join(tags))
     return tags
 

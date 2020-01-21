@@ -34,10 +34,12 @@ Model based on paper:
             |-- model.py
             |-- train.py         
 ```
-#### To train the model
-    python train.py
-
-
+### To train the LSTM model
+```shell
+cd main_LSTM
+python train.py
+```
+### To train the BERT-pretrained model
 #### Get BERT model for PyTorch
 - Install [pytorch-pretrained-bert](https://pypi.org/project/pytorch-pretrained-bert/):
     + pip install pytorch-pretrained-bert
@@ -58,4 +60,9 @@ Model based on paper:
        ```shell
        cp $TF_BERT_BASE_DIR/bert_config.json $PT_BERT_BASE_DIR/bert_config.json
        cp $TF_BERT_BASE_DIR/vocab.txt $PT_BERT_BASE_DIR/vocab.txt
-       ``
+       ```
+####
+```shell
+cd main_BERT
+python train.py
+```
