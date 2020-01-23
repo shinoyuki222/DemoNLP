@@ -1,0 +1,499 @@
+2019-01-25 03:16:21,103:INFO: device: cuda, n_gpu: 2, 16-bits training: True
+2019-01-25 03:16:21,103:INFO: Loading the datasets...
+2019-01-25 03:16:21,103:INFO: loading vocabulary file bert-base-chinese-pytorch/vocab.txt
+2019-01-25 03:16:57,753:INFO: loading archive file bert-base-chinese-pytorch
+2019-01-25 03:16:57,754:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2019-01-25 03:17:05,248:INFO: Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+2019-01-25 03:17:05,249:INFO: Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias']
+2019-01-25 03:17:10,119:INFO: Starting training for 20 epoch(s)
+2019-01-25 03:17:10,119:INFO: Epoch 1/20
+2019-01-25 03:29:39,999:INFO: - Train metrics: loss: 00.00; f1: 95.90
+2019-01-25 03:30:02,809:INFO: - Val metrics: loss: 00.01; f1: 93.77
+2019-01-25 03:30:16,565:INFO: - Found new best F1
+2019-01-25 03:30:16,565:INFO: Epoch 2/20
+2019-01-25 03:42:35,186:INFO: - Train metrics: loss: 00.00; f1: 98.20
+2019-01-25 03:42:58,057:INFO: - Val metrics: loss: 00.01; f1: 95.16
+2019-01-25 03:43:11,751:INFO: - Found new best F1
+2019-01-25 03:43:11,751:INFO: Epoch 3/20
+2019-01-25 03:55:24,783:INFO: - Train metrics: loss: 00.00; f1: 98.93
+2019-01-25 03:55:47,373:INFO: - Val metrics: loss: 00.02; f1: 95.06
+2019-01-25 03:55:51,971:INFO: Epoch 4/20
+2019-01-25 04:07:54,169:INFO: - Train metrics: loss: 00.00; f1: 99.15
+2019-01-25 04:08:16,586:INFO: - Val metrics: loss: 00.02; f1: 95.22
+2019-01-25 04:08:23,019:INFO: - Found new best F1
+2019-01-25 04:08:23,019:INFO: Epoch 5/20
+2019-01-25 04:20:33,775:INFO: - Train metrics: loss: 00.00; f1: 99.39
+2019-01-25 04:20:56,560:INFO: - Val metrics: loss: 00.02; f1: 95.37
+2019-01-25 04:21:10,005:INFO: - Found new best F1
+2019-01-25 04:21:10,005:INFO: Epoch 6/20
+2019-01-25 04:33:15,432:INFO: - Train metrics: loss: 00.00; f1: 99.54
+2019-01-25 04:33:37,989:INFO: - Val metrics: loss: 00.02; f1: 95.50
+2019-01-25 04:33:51,402:INFO: - Found new best F1
+2019-01-25 04:33:51,402:INFO: Epoch 7/20
+2019-01-25 04:45:52,903:INFO: - Train metrics: loss: 00.00; f1: 99.58
+2019-01-25 04:46:15,469:INFO: - Val metrics: loss: 00.03; f1: 95.39
+2019-01-25 04:46:20,443:INFO: Epoch 8/20
+2019-01-25 04:58:27,467:INFO: - Train metrics: loss: 00.00; f1: 99.59
+2019-01-25 04:58:50,161:INFO: - Val metrics: loss: 00.03; f1: 95.30
+2019-01-25 04:58:54,659:INFO: Epoch 9/20
+2019-01-25 05:10:58,331:INFO: - Train metrics: loss: 00.00; f1: 99.71
+2019-01-25 05:11:20,969:INFO: - Val metrics: loss: 00.03; f1: 95.89
+2019-01-25 05:11:33,933:INFO: - Found new best F1
+2019-01-25 05:11:33,933:INFO: Epoch 10/20
+2019-01-25 05:23:34,668:INFO: - Train metrics: loss: 00.00; f1: 99.59
+2019-01-25 05:23:57,161:INFO: - Val metrics: loss: 00.03; f1: 95.42
+2019-01-25 05:24:01,986:INFO: Epoch 11/20
+2019-01-25 05:36:07,205:INFO: - Train metrics: loss: 00.00; f1: 99.88
+2019-01-25 05:36:29,956:INFO: - Val metrics: loss: 00.03; f1: 95.90
+2019-01-25 05:36:42,835:INFO: - Found new best F1
+2019-01-25 05:36:42,836:INFO: Epoch 12/20
+2019-01-25 05:48:44,861:INFO: - Train metrics: loss: 00.00; f1: 99.90
+2019-01-25 05:49:07,503:INFO: - Val metrics: loss: 00.03; f1: 95.88
+2019-01-25 05:49:12,045:INFO: Best val f1: 95.90
+2020-01-21 10:40:39,835:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 10:40:39,835:INFO: Loading the datasets...
+2020-01-21 10:40:39,839:ERROR: Model name 'bert-base-chinese-pytorch' was not found in model name list (bert-base-uncased, bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, bert-base-multilingual-cased, bert-base-chinese). We assumed 'bert-base-chinese-pytorch\vocab.txt' was a path or url but couldn't find any file associated to this path or url.
+2020-01-21 10:47:09,696:INFO: device: cuda, n_gpu: 1, 16-bits training: False
+2020-01-21 10:47:09,712:INFO: Loading the datasets...
+2020-01-21 10:47:09,725:ERROR: Model name 'bert-base-chinese-pytorch' was not found in model name list (bert-base-uncased, bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, bert-base-multilingual-cased, bert-base-chinese). We assumed 'bert-base-chinese-pytorch\vocab.txt' was a path or url but couldn't find any file associated to this path or url.
+2020-01-21 11:34:35,916:INFO: device: cuda, n_gpu: 1, 16-bits training: False
+2020-01-21 11:34:35,948:INFO: Loading the datasets...
+2020-01-21 11:34:35,948:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 12:33:55,889:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 12:33:55,889:INFO: Loading the datasets...
+2020-01-21 12:33:55,889:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 12:36:25,222:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 12:36:25,222:INFO: Loading the datasets...
+2020-01-21 12:36:25,222:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 12:37:08,035:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-21 12:37:08,035:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-21 12:37:13,688:INFO: Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+2020-01-21 12:37:13,698:INFO: Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias']
+2020-01-21 12:37:13,708:INFO: Starting training for 20 epoch(s)
+2020-01-21 12:37:13,708:INFO: Epoch 1/20
+2020-01-21 13:33:12,261:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:33:12,262:INFO: Loading the datasets...
+2020-01-21 13:33:31,584:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:33:31,584:INFO: Loading the datasets...
+2020-01-21 13:34:18,268:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:34:18,269:INFO: Loading the datasets...
+2020-01-21 13:34:18,270:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:34:40,216:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:34:40,217:INFO: Loading the datasets...
+2020-01-21 13:34:40,217:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:35:08,655:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:35:08,655:INFO: Loading the datasets...
+2020-01-21 13:35:08,656:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:35:44,874:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:35:44,875:INFO: Loading the datasets...
+2020-01-21 13:35:44,875:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:36:40,790:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:36:40,790:INFO: Loading the datasets...
+2020-01-21 13:36:40,791:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:40:32,022:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:40:32,022:INFO: Loading the datasets...
+2020-01-21 13:40:32,023:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:46:51,520:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:46:51,521:INFO: Loading the datasets...
+2020-01-21 13:46:51,521:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:47:15,591:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:47:15,591:INFO: Loading the datasets...
+2020-01-21 13:47:15,592:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:47:27,068:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:47:27,069:INFO: Loading the datasets...
+2020-01-21 13:47:27,070:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:48:38,333:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 13:48:38,333:INFO: Loading the datasets...
+2020-01-21 13:48:38,334:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 13:49:11,307:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-21 13:49:11,307:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-21 13:49:15,201:INFO: Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+2020-01-21 13:49:15,201:INFO: Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias']
+2020-01-21 13:49:15,213:INFO: Starting training for 20 epoch(s)
+2020-01-21 13:49:15,213:INFO: Epoch 1/20
+2020-01-21 17:40:29,529:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 17:40:29,530:INFO: Loading the datasets...
+2020-01-21 17:40:29,532:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 17:41:22,320:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 17:41:22,321:INFO: Loading the datasets...
+2020-01-21 17:41:22,322:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 17:41:52,197:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-21 17:41:52,198:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-21 17:41:56,468:INFO: Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+2020-01-21 17:41:56,469:INFO: Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias']
+2020-01-21 17:41:56,472:INFO: Starting training for 20 epoch(s)
+2020-01-21 17:41:56,473:INFO: Epoch 1/20
+2020-01-21 18:02:11,435:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 18:02:11,441:INFO: Loading the datasets...
+2020-01-21 18:02:11,453:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 18:02:42,571:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 18:02:42,582:INFO: Loading the datasets...
+2020-01-21 18:02:42,588:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 18:03:21,479:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 18:03:21,482:INFO: Loading the datasets...
+2020-01-21 18:03:21,489:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 18:03:42,017:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 18:03:42,026:INFO: Loading the datasets...
+2020-01-21 18:03:42,031:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-21 18:03:55,073:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-21 18:03:55,076:INFO: Loading the datasets...
+2020-01-21 18:03:55,080:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:43:38,449:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:43:38,450:INFO: Loading the datasets...
+2020-01-22 12:43:38,450:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:44:54,487:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:44:54,488:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:45:41,452:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:45:41,453:INFO: Loading the datasets...
+2020-01-22 12:45:41,453:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:46:28,339:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:46:28,340:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:46:31,391:INFO: https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt not found in cache, downloading to C:\Users\XIAOQI~1.TAN\AppData\Local\Temp\tmpbbmrezou
+2020-01-22 12:46:32,782:INFO: copying C:\Users\XIAOQI~1.TAN\AppData\Local\Temp\tmpbbmrezou to cache at C:\Users\xiaoqing.tang\.pytorch_pretrained_bert\26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+2020-01-22 12:46:32,792:INFO: creating metadata file for C:\Users\xiaoqing.tang\.pytorch_pretrained_bert\26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+2020-01-22 12:46:32,795:INFO: removing temp file C:\Users\XIAOQI~1.TAN\AppData\Local\Temp\tmpbbmrezou
+2020-01-22 12:46:32,796:INFO: loading vocabulary file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt from cache at C:\Users\xiaoqing.tang\.pytorch_pretrained_bert\26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+2020-01-22 12:46:32,948:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:46:32,949:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:47:24,679:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:47:24,679:INFO: Loading the datasets...
+2020-01-22 12:47:24,679:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:47:36,865:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:47:36,866:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:47:38,753:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:48:26,180:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:48:26,180:INFO: Loading the datasets...
+2020-01-22 12:48:26,180:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:48:37,134:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:48:37,135:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:48:39,116:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:48:39,256:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:48:39,257:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:50:52,073:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:50:52,073:INFO: Loading the datasets...
+2020-01-22 12:50:52,074:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:51:03,509:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:51:03,510:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:51:05,553:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:51:05,691:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:51:05,692:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:51:23,557:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:51:23,557:INFO: Loading the datasets...
+2020-01-22 12:51:23,558:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:51:34,808:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:51:34,809:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:51:37,028:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:51:37,195:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:51:37,196:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:52:08,210:INFO: device: cpu, n_gpu: 0, 16-bits training: False
+2020-01-22 12:52:08,210:INFO: Loading the datasets...
+2020-01-22 12:52:08,211:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:52:21,804:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:52:21,805:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+2020-01-22 12:52:24,263:INFO: loading vocabulary file bert-base-chinese-pytorch\vocab.txt
+2020-01-22 12:52:24,434:INFO: loading archive file bert-base-chinese-pytorch
+2020-01-22 12:52:24,436:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
