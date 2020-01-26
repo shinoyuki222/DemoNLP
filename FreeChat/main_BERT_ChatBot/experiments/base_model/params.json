@@ -3,8 +3,8 @@
     "max_len": 30,
 
     "learning_rate": 3e-5,
-    "decoder_learning_ratio ": 5.0,
-    "teacher_forcing_ratio": 1,=
+    "decoder_learning_ratio": 5.0,
+    "teacher_forcing_ratio": 1,
     "weight_decay": 0.01,
     "clip_grad": 2,
 

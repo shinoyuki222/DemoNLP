@@ -25,51 +25,74 @@ parser.add_argument('--restore_file', default='best', help="name of the file in 
 parser.add_argument('--multi_gpu', default=False, action='store_true', help="Whether to use multiple GPUs if available")
 parser.add_argument('--fp16', default=False, action='store_true', help="Whether to use 16-bit float precision instead of 32-bit")
 
+def maskNLLLoss(inp, target, mask):
+    nTotal = mask.sum()
+    crossEntropy = -torch.log(torch.gather(inp, 1, target.view(-1, 1)).squeeze(1))
+    loss = crossEntropy.masked_select(mask).mean()
+    loss = loss.to(device)
+    return loss, nTotal.item()
 
-def evaluate(model, data_iterator, params, mark='Eval', verbose=False):
+def evaluate(encoder, decoder, data_iterator, params, mark='Eval', verbose=False):
     """Evaluate the model on `steps` batches."""
     # set model to evaluation mode
     model.eval()
 
-    idx2tag = params.idx2tag
+    # idx2tag = params.idx2tag
 
-    true_tags = []
-    pred_tags = []
+    true_answers = []
+    pred_answers = []
 
     # a running average object for loss
     loss_avg = utils.RunningAverage()
 
     for _ in range(params.eval_steps):
         # fetch the next evaluation batch
-        batch_data, batch_tags = next(data_iterator)
+        batch_data, batch_answers, batch_max_len_target= next(data_iterator)
         batch_masks = batch_data.gt(0)
+        # compute model output and loss
+        encoder_outputs, encoder_hidden = encoder(batch_data, token_type_ids=None, attention_mask=batch_masks, labels=batch_tags)
+        # Set initial decoder hidden state to the encoder's final hidden state
+        decoder_hidden = encoder_hidden[:decoder.n_layers]
 
-        loss = model(batch_data, token_type_ids=None, attention_mask=batch_masks, labels=batch_tags)
+
+        for t in range(batch_max_len_target):
+            decoder_output, decoder_hidden = decoder(
+                decoder_input, decoder_hidden, encoder_outputs
+            )
+            # Teacher forcing: next input is current target
+            decoder_input = target_variable[t].view(1, -1)
+            # Calculate and accumulate loss
+            mask_loss, nTotal = maskNLLLoss(decoder_output, target_variable[t], mask[t])
+            loss += mask_loss
+            print_losses.append(mask_loss.item() * nTotal)
+            n_totals += nTotal
+
         if params.n_gpu > 1 and params.multi_gpu:
             loss = loss.mean()
         loss_avg.update(loss.item())
+    return loss
         
-        batch_output = model(batch_data, token_type_ids=None, attention_mask=batch_masks)  # shape: (batch_size, max_len, num_labels)
+    #     batch_output = model(batch_data, token_type_ids=None, attention_mask=batch_masks)  # shape: (batch_size, max_len, num_labels)
         
-        batch_output = batch_output.detach().cpu().numpy()
-        batch_tags = batch_tags.to('cpu').numpy()
+    #     batch_output = batch_output.detach().cpu().numpy()
+    #     batch_answers = batch_answers.to('cpu').numpy()
 
-        pred_tags.extend([idx2tag.get(idx) for indices in np.argmax(batch_output, axis=2) for idx in indices])
-        true_tags.extend([idx2tag.get(idx) for indices in batch_tags for idx in indices])
-    assert len(pred_tags) == len(true_tags)
+    #     pred_answers.extend([idx2tag.get(idx) for indices in np.argmax(batch_output, axis=2) for idx in indices])
+    #     true_answers.extend([idx2tag.get(idx) for indices in batch_answers for idx in indices])
+    # assert len(pred_answers) == len(true_answers)
 
-    # logging loss, f1 and report
-    metrics = {}
-    f1 = f1_score(true_tags, pred_tags)
-    metrics['loss'] = loss_avg()
-    metrics['f1'] = f1
-    metrics_str = "; ".join("{}: {:05.2f}".format(k, v) for k, v in metrics.items())
-    logging.info("- {} metrics: ".format(mark) + metrics_str)
+    # # logging loss, f1 and report
+    # metrics = {}
+    # f1 = f1_score(true_answers, pred_answers)
+    # metrics['loss'] = loss_avg()
+    # metrics['f1'] = f1
+    # metrics_str = "; ".join("{}: {:05.2f}".format(k, v) for k, v in metrics.items())
+    # logging.info("- {} metrics: ".format(mark) + metrics_str)
 
-    if verbose:
-        report = classification_report(true_tags, pred_tags)
-        logging.info(report)
-    return metrics
+    # if verbose:
+    #     report = classification_report(true_answers, pred_answers)
+    #     logging.info(report)
+    # return metrics
 
 
 if __name__ == '__main__':
