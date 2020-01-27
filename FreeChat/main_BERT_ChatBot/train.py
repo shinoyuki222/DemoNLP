@@ -17,7 +17,12 @@ from data_loader import DataLoader
 from evaluate import evaluate
 import utils
 
-
+def maskNLLLoss(inp, target, mask):
+    nTotal = mask.sum()
+    crossEntropy = -torch.log(torch.gather(inp, 1, target.view(-1, 1)).squeeze(1))
+    loss = crossEntropy.masked_select(mask).mean()
+    loss = loss.to(params.device)
+    return loss, nTotal.item()
 
 
 
@@ -28,6 +33,11 @@ def train(encoder, decoder, data_iterator, encoder_optimizer, decoder_optimizer,
     decoder.train()
     scheduler.step()
 
+    # Initialize variables
+    loss = 0
+    print_losses = []
+    n_totals = 0
+
     # a running average object for loss
     loss_avg = utils.RunningAverage()
     
@@ -35,47 +45,48 @@ def train(encoder, decoder, data_iterator, encoder_optimizer, decoder_optimizer,
     tqdm_t = trange(params.train_steps)
     for i in tqdm_t:
         # fetch the next training batch
-        batch_data, batch_answers, batch_max_len_target = next(data_iterator)
+        batch_data, batch_answers, max_len_target = next(data_iterator)
         batch_masks = batch_data.gt(0)
 
         # compute model output and loss
         encoder_outputs, encoder_hidden = encoder(batch_data, token_type_ids=None, attention_mask=batch_masks)
         # Set initial decoder hidden state to the encoder's final hidden state
-        decoder_hidden = encoder_hidden[:decoder.n_layers]
+        decoder_hidden = encoder_hidden.expand(2,encoder_hidden.size(0),encoder_hidden.size(1))
+        # encoder_outputs = torch.tensor(encoder_outputs)
+        encoder_outputs_select = encoder_outputs[-1].transpose(1,0).to(params.device)
 
         # Determine if we are using teacher forcing this iteration
         use_teacher_forcing = True if random.random() < params.teacher_forcing_ratio else False
-
+        # reshape to decoder
+        batch_answers = batch_answers.transpose(1, 0)
+        batch_masks = batch_masks.transpose(1, 0)
         # Forward batch of sequences through decoder one time step at a time
         if use_teacher_forcing:
-            for t in range(batch_max_len_target):
-                decoder_output, decoder_hidden = decoder(
-                    decoder_input, decoder_hidden, encoder_outputs
-                )
+            for t in range(max_len_target):
                 # Teacher forcing: next input is current target
-                decoder_input = target_variable[t].view(1, -1)
+                decoder_input = batch_answers[t].view(1, -1)
+                decoder_output, decoder_hidden = decoder(
+                    decoder_input, decoder_hidden, encoder_outputs_select
+                )
                 # Calculate and accumulate loss
-                mask_loss, nTotal = maskNLLLoss(decoder_output, target_variable[t], mask[t])
+                mask_loss, nTotal = maskNLLLoss(decoder_output, batch_answers[t], batch_masks[t])
                 loss += mask_loss
                 print_losses.append(mask_loss.item() * nTotal)
                 n_totals += nTotal
         else:
-            for t in range(batch_max_len_target):
+            for t in range(bmax_len_target):
                 decoder_output, decoder_hidden = decoder(
-                    decoder_input, decoder_hidden, encoder_outputs
+                    decoder_input, decoder_hidden, encoder_outputs_select
                 )
                 # No teacher forcing: next input is decoder's own current output
                 _, topi = decoder_output.topk(1)
-                decoder_input = torch.LongTensor([[topi[i][0] for i in range(batch_size)]])
+                decoder_input = torch.LongTensor([[topi[i][0] for i in range(params.batch_size)]])
                 decoder_input = decoder_input.to(params.device)
                 # Calculate and accumulate loss
-                mask_loss, nTotal = maskNLLLoss(decoder_output, target_variable[t], mask[t])
+                mask_loss, nTotal = maskNLLLoss(decoder_output, batch_answers[t], batch_masks[t])
                 loss += mask_loss
                 print_losses.append(mask_loss.item() * nTotal)
                 n_totals += nTotal
-
-
-
 
 
         if params.n_gpu > 1 and args.multi_gpu:
@@ -90,7 +101,7 @@ def train(encoder, decoder, data_iterator, encoder_optimizer, decoder_optimizer,
             encoder_optimizer.backward(loss)
             decoder_optimizer.backward(loss)
         else:
-            loss.backward()
+            loss.backward(retain_graph=True)
 
 
         # Clip gradients: gradients are modified in place
