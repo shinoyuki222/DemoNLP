@@ -23,7 +23,10 @@ Other API needed:
 - re
 - unicodedata
 - tqdm
-
+- [pytorch-pretrained-bert](https://pypi.org/project/pytorch-pretrained-bert/):
+    '''shell
+    pip install pytorch-pretrained-bert
+    '''
 ## Projects:
 - [FreeChat](https://github.com/shinoyuki222/PyTorch_NLP/tree/master/FreeChat)
 - [NER](https://github.com/shinoyuki222/PyTorch_NLP/tree/master/NER)
