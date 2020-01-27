@@ -127,7 +127,7 @@ class DataLoader(object):
             batch_data, batch_answers = batch_data.to(
                 self.device), batch_answers.to(self.device)
 
-            yield batch_data, batch_answers, batch_max_len_target
+            yield batch_data, batch_answers, max_len_target
 
 
 if __name__ == '__main__':
