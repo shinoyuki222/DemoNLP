@@ -17,13 +17,18 @@ from data_loader import DataLoader
 import utils
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_dir', default='..\\NER_data\\MSRA', help="Directory containing the dataset")
+parser.add_argument('--data_dir', default='..\\NER_data\\MSRA',
+                    help="Directory containing the dataset")
 parser.add_argument('--bert_model_dir', default='bert-base-chinese-pytorch',
                     help="Directory containing the BERT model in PyTorch")
-parser.add_argument('--model_dir', default='experiments\\base_model', help="Directory containing params.json")
-parser.add_argument('--seed', type=int, default=23, help="random seed for initialization")
-parser.add_argument('--restore_file', default='best', help="name of the file in `model_dir` containing weights to load")
-parser.add_argument('--multi_gpu', default=False, action='store_true', help="Whether to use multiple GPUs if available")
+parser.add_argument('--model_dir', default='experiments\\base_model',
+                    help="Directory containing params.json")
+parser.add_argument('--seed', type=int, default=23,
+                    help="random seed for initialization")
+parser.add_argument('--restore_file', default='best',
+                    help="name of the file in `model_dir` containing weights to load")
+parser.add_argument('--multi_gpu', default=False, action='store_true',
+                    help="Whether to use multiple GPUs if available")
 parser.add_argument('--fp16', default=False, action='store_true',
                     help="Whether to use 16-bit float precision instead of 32-bit")
 
@@ -36,23 +41,9 @@ class DataLoader_test(object):
         self.device = params.device
         self.seed = params.seed
         self.token_pad_idx = 0
+        self.tokenizer = BertTokenizer.from_pretrained(
+            bert_model_dir, do_lower_case=True)
 
-        tags = self.load_tags()
-        self.tag2idx = {tag: idx for idx, tag in enumerate(tags)}
-        self.idx2tag = {idx: tag for idx, tag in enumerate(tags)}
-        params.tag2idx = self.tag2idx
-        params.idx2tag = self.idx2tag
-        self.tag_pad_idx = self.tag2idx['O']
-
-        self.tokenizer = BertTokenizer.from_pretrained(bert_model_dir, do_lower_case=True)
-
-    def load_tags(self):
-        tags = []
-        file_path = os.path.join(self.data_dir, 'tags.txt')
-        with open(file_path, 'r', encoding='utf-8') as file:
-            for tag in file:
-                tags.append(tag.strip())
-        return tags
 
     def load_sentences(self, sent):
         """Loads sentences and tags from their corresponding files.
@@ -63,6 +54,44 @@ class DataLoader_test(object):
         tokens = self.tokenizer.tokenize(sent.strip())
         sentence.append(self.tokenizer.convert_tokens_to_ids(tokens))
         return torch.tensor(sentence, dtype=torch.long).to(self.device)
+
+def test(encoder, decoder, searcher, data_loader, sentence, max_length=params.max_len):
+    ### Format input sentence as a batch
+    # words -> indexes
+    indexes_batch = data_loader.load_sentences(input_sentence)
+    # Create lengths tensor
+    lengths = torch.tensor([len(indexes) for indexes in indexes_batch])
+    # Transpose dimensions of batch to match models' expectations
+    input_batch = torch.LongTensor(indexes_batch).transpose(0, 1)
+    # Use appropriate device
+    input_batch = input_batch.to(params.device)
+    lengths = lengths.to(params.device)
+    # Decode sentence with searcher
+    token_idxs, scores = searcher(input_batch, lengths, max_length)
+    # indexes -> words
+    decoded_words = [data_loader.tokenizer.convert_ids_to_tokens(token_idxs)]
+    return decoded_words
+
+
+def testInput(encoder, decoder, searcher, data_loader):
+	print("==============Chat with me=================")
+	print("Type q or quit to quit chat")
+	print("===========================================")
+	input_sentence = ''
+	while(1):
+		try:
+			# Get input sentence
+			input_sentence = input('> ')
+			# Check if it is quit case
+			if input_sentence == 'q' or input_sentence == 'quit': break
+            print(input_sentence)
+			# Evaluate sentence
+			output_words = test(encoder, decoder, searcher, data_loader, input_sentence)
+			# Format and print response sentence
+			print('Bot:', ' '.join(output_words))
+
+		except KeyError:
+			print("Error: Encountered unknown word.")
 
 
 def test(model, sentence, params, mark='Eval', verbose=False):
@@ -79,7 +108,8 @@ def test(model, sentence, params, mark='Eval', verbose=False):
                          attention_mask=batch_masks)  # shape: (batch_size, max_len, num_labels)
 
     batch_output = batch_output.detach().cpu().numpy()
-    pred_tags.extend([idx2tag.get(idx) for indices in np.argmax(batch_output, axis=2) for idx in indices])
+    pred_tags.extend([idx2tag.get(idx) for indices in np.argmax(
+        batch_output, axis=2) for idx in indices])
 
     return pred_tags
 
@@ -89,11 +119,13 @@ if __name__ == '__main__':
 
     # Load the parameters from json file
     json_path = os.path.join(args.model_dir, 'params.json')
-    assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
+    assert os.path.isfile(
+        json_path), "No json configuration file found at {}".format(json_path)
     params = utils.Params(json_path)
 
     # Use GPUs if available
-    params.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    params.device = torch.device(
+        'cuda' if torch.cuda.is_available() else 'cpu')
     params.n_gpu = torch.cuda.device_count()
     params.multi_gpu = args.multi_gpu
 
@@ -111,8 +143,8 @@ if __name__ == '__main__':
     logging.info("Loading the dataset...")
 
     # Initialize the DataLoader
-    data_loader = DataLoader_test(args.data_dir, args.bert_model_dir, params, token_pad_idx=0)
-
+    data_loader = DataLoader_test(
+        args.data_dir, args.bert_model_dir, params, token_pad_idx=0)
 
     # logging.info("- done.")
 
@@ -123,7 +155,8 @@ if __name__ == '__main__':
 
     model.to(params.device)
     # Reload weights from the saved file
-    utils.load_checkpoint(os.path.join(args.model_dir, args.restore_file + '.pth.tar'), model)
+    utils.load_checkpoint(os.path.join(
+        args.model_dir, args.restore_file + '.pth.tar'), model)
     if args.fp16:
         model.half()
     if params.n_gpu > 1 and args.multi_gpu:
@@ -131,18 +164,20 @@ if __name__ == '__main__':
 
     print("Starting Predict...")
     print("Using `q` or `quit` to exist")
-        # logging.info("Starting evaluation...")
+    # logging.info("Starting evaluation...")
     while(1):
         try:
             # Get input sentence
             input_sentence = input('> ')
             # Check if it is quit case
-            if input_sentence == 'q' or input_sentence == 'quit': break
+            if input_sentence == 'q' or input_sentence == 'quit':
+                break
             # Normalize sentence
             test_data = data_loader.load_sentences(input_sentence)
             print(input_sentence)
             # Evaluate sentence
-            pred_tags = test(model, test_data, params, mark='Test', verbose=True)
+            pred_tags = test(model, test_data, params,
+                             mark='Test', verbose=True)
             # Format and print response sentence
             pred_tags[:] = [x for x in pred_tags if x != 'PAD']
             print('Entity tags:', ' '.join(pred_tags))
