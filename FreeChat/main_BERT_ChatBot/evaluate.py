@@ -47,22 +47,25 @@ def evaluate(encoder, decoder, data_iterator, params, mark='Eval', verbose=False
 
     for _ in range(params.eval_steps):
         # fetch the next evaluation batch
-        batch_data, batch_answers, batch_max_len_target= next(data_iterator)
+        batch_data, batch_answers, max_len_target= next(data_iterator)
         batch_masks = batch_data.gt(0)
         # compute model output and loss
         encoder_outputs, encoder_hidden = encoder(batch_data, token_type_ids=None, attention_mask=batch_masks, labels=batch_tags)
         # Set initial decoder hidden state to the encoder's final hidden state
-        decoder_hidden = encoder_hidden[:decoder.n_layers]
+        decoder_hidden = encoder_hidden.expand(2,encoder_hidden.size(0),encoder_hidden.size(1))
+        # encoder_outputs = torch.tensor(encoder_outputs)
+        encoder_outputs_select = encoder_outputs[-1].transpose(1,0).to(params.device)
 
-
-        for t in range(batch_max_len_target):
+        batch_answers = batch_answers.transpose(1, 0)
+        batch_masks = batch_masks.transpose(1, 0)
+        for t in range(max_len_target):
             decoder_output, decoder_hidden = decoder(
-                decoder_input, decoder_hidden, encoder_outputs
+                decoder_input, decoder_hidden, encoder_outputs_select
             )
             # Teacher forcing: next input is current target
-            decoder_input = target_variable[t].view(1, -1)
+            decoder_input = batch_answers[t].view(1, -1)
             # Calculate and accumulate loss
-            mask_loss, nTotal = maskNLLLoss(decoder_output, target_variable[t], mask[t])
+            mask_loss, nTotal = maskNLLLoss(decoder_output, batch_answers[t], batch_masks[t])
             loss += mask_loss
             print_losses.append(mask_loss.item() * nTotal)
             n_totals += nTotal

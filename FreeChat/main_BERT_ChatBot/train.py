@@ -33,10 +33,7 @@ def train(encoder, decoder, data_iterator, encoder_optimizer, decoder_optimizer,
     decoder.train()
     scheduler.step()
 
-    # Initialize variables
-    loss = 0
-    print_losses = []
-    n_totals = 0
+
 
     # a running average object for loss
     loss_avg = utils.RunningAverage()
@@ -44,6 +41,10 @@ def train(encoder, decoder, data_iterator, encoder_optimizer, decoder_optimizer,
     # Use tqdm for progress bar
     tqdm_t = trange(params.train_steps)
     for i in tqdm_t:
+        # Initialize variables
+        loss = 0
+        print_losses = []
+        n_totals = 0
         # fetch the next training batch
         batch_data, batch_answers, max_len_target = next(data_iterator)
         batch_masks = batch_data.gt(0)
@@ -160,11 +161,15 @@ def train_and_evaluate(encoder, decoder, train_data, val_data, encoder_optimizer
         # improve_f1 = val_f1 - best_val_f1
 
         # Save weights of the network
-        model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
-        optimizer_to_save = optimizer.optimizer if args.fp16 else optimizer
+        encoder_to_save = encoder.module if hasattr(encoder, 'module') else encoder  # Only save the encoder it-self
+        decoder_to_save = decoder
+        encoder_optimizer_to_save = encoder_optimizer.optimizer if args.fp16 else encoder_optimizer
+        decoder_optimizer_to_save = decoder_optimizer
         utils.save_checkpoint({'epoch': epoch + 1,
-                               'state_dict': model_to_save.state_dict(),
-                               'optim_dict': optimizer_to_save.state_dict()},
+                               'encoder_state_dict': encoder_to_save.state_dict(),
+                               'encoder_optim_dict': encoder_optimizer_to_save.state_dict(),
+                               'decoder_state_dict': decoder_to_save.state_dict(),
+                               'decoder_optim_dict': decoder_optimizer_to_save.state_dict()},
                                is_best=improve_loss>0,
                                checkpoint=model_dir)
         if improve_loss > 0:
