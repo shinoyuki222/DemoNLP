@@ -1,4 +1,4 @@
-# Pytorch NLP
+# DemoNLP
 
 ## Requirements
 Recommend using [Anaconda3.7](https://docs.anaconda.com/anaconda/install/)
