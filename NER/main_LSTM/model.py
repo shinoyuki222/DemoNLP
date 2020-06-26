@@ -38,8 +38,7 @@ class EncoderRNN(nn.Module):
 
         # Initialize GRU; the input_size and hidden_size params are both set to 'hidden_size'
         #   because our input size is a word embedding with number of features == hidden_size
-        self.gru = nn.GRU(hidden_size, hidden_size, n_layers,
-                          dropout=(0 if n_layers == 1 else dropout), bidirectional=True)
+        self.gru = nn.GRU(hidden_size, hidden_size, n_layers, dropout=(0 if n_layers == 1 else dropout), bidirectional=True)
 
     def forward(self, input_seq, input_lengths, hidden=None):
         # Convert word indexes to embeddings
@@ -260,56 +259,56 @@ class GreedySearchDecoder(nn.Module):
         # Return collections of word tokens and scores
         return all_tokens, all_scores
 
-# if __name__ == '__main__':
-#     import argparse
-#     import os
-#     from dataloader import *
-#
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('-c', '--corpus', action='store', dest='corpus_name', default='MSRA',help='Store corpus name')
-#     parser.add_argument('-a', '--attn_model', action='store', dest='attn_model', default='dot',
-#                         help='Store attention mode dot concat or general')
-#
-#     parser.add_argument('-hs', '--hidden_size', action="store", dest='hidden_size', default=500, type=int,
-#                         help='Set hidden_size')
-#     parser.add_argument('-en', '--rnn_num', action="store", dest='rnn_n_layers', default=2, type=int,
-#                         help='Set rnn_n_layers')
-#     parser.add_argument('-dp', '--dropout', action="store", dest='dropout', default=0.1, type=int,
-#                         help='Set dropout rate')
-#     parser.add_argument('-b', '--batch_size', action="store", dest='batch_size', default=64, type=int,
-#                         help='Set batch_size')
-#
-#     parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=4000, type=int,
-#                         help='Set n_iteration')
-#
-#     parser.add_argument('-s', '--save_every', action="store", dest='save_every', default=500, type=int,
-#                         help='Set save_every')
-#     parser.add_argument('-p', '--print_every', action="store", dest='print_every', default=1, type=int,
-#                         help='Set print_every')
-#
-#     args = parser.parse_args()
-#
-#     save_dir = os.path.join("", "save")
-#     corpus_name = args.corpus_name
-#     corpus = os.path.join("NER_data", corpus_name)
-#     datafile_train = os.path.join(corpus, "train")
-#     datafile_dev = os.path.join(corpus, "val")
-#     print("corpus_name: {0}, corpus = {1}, datafile_train = {2}".format(corpus_name, corpus, datafile_train))
-#
-#     voc, tag = load_static_dict(save_dir, corpus_name)
-#     # Configure models
-#     model_name = 'NER_model'
-#     attn_model = args.attn_model
-#     hidden_size = args.hidden_size
-#     rnn_n_layers = args.rnn_n_layers
-#     dropout = args.dropout
-#     batch_size = args.batch_size
-#     output_size = tag.num_tags
-#     print('Building model ...')
-#     # Initialize word embeddings
-#     embedding = nn.Embedding(voc.num_words, hidden_size)
-#     # Initialize encoder & decoder models
-#     model=AttnRNN(attn_model,hidden_size, output_size, embedding, rnn_n_layers, dropout)
-#     # Use appropriate device
-#     model = model.to(device)
-#     print('Models built and ready to go!')
+if __name__ == '__main__':
+    import argparse
+    import os
+    from dataloader import *
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--corpus', action='store', dest='corpus_name', default='MSRA',help='Store corpus name')
+    parser.add_argument('-a', '--attn_model', action='store', dest='attn_model', default='dot',
+                        help='Store attention mode dot concat or general')
+
+    parser.add_argument('-hs', '--hidden_size', action="store", dest='hidden_size', default=500, type=int,
+                        help='Set hidden_size')
+    parser.add_argument('-en', '--rnn_num', action="store", dest='rnn_n_layers', default=2, type=int,
+                        help='Set rnn_n_layers')
+    parser.add_argument('-dp', '--dropout', action="store", dest='dropout', default=0.1, type=int,
+                        help='Set dropout rate')
+    parser.add_argument('-b', '--batch_size', action="store", dest='batch_size', default=64, type=int,
+                        help='Set batch_size')
+
+    parser.add_argument('-n', '--n_iteration', action="store", dest='n_iteration', default=4000, type=int,
+                        help='Set n_iteration')
+
+    parser.add_argument('-s', '--save_every', action="store", dest='save_every', default=500, type=int,
+                        help='Set save_every')
+    parser.add_argument('-p', '--print_every', action="store", dest='print_every', default=1, type=int,
+                        help='Set print_every')
+
+    args = parser.parse_args()
+
+    save_dir = os.path.join("", "save")
+    corpus_name = args.corpus_name
+    corpus = os.path.join("NER_data", corpus_name)
+    datafile_train = os.path.join(corpus, "train")
+    datafile_dev = os.path.join(corpus, "val")
+    print("corpus_name: {0}, corpus = {1}, datafile_train = {2}".format(corpus_name, corpus, datafile_train))
+
+    voc, tag = load_static_dict(save_dir, corpus_name)
+    # Configure models
+    model_name = 'NER_model'
+    attn_model = args.attn_model
+    hidden_size = args.hidden_size
+    rnn_n_layers = args.rnn_n_layers
+    dropout = args.dropout
+    batch_size = args.batch_size
+    output_size = tag.num_tags
+    print('Building model ...')
+    # Initialize word embeddings
+    embedding = nn.Embedding(voc.num_words, hidden_size)
+    # Initialize encoder & decoder models
+    model=AttnRNN(attn_model,hidden_size, output_size, embedding, rnn_n_layers, dropout)
+    # Use appropriate device
+    model = model.to(device)
+    print('Models built and ready to go!')

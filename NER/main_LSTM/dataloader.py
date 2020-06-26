@@ -356,17 +356,18 @@ if __name__ == '__main__':
 
     save_dir = os.path.join("", "save")
     corpus_name = args.corpus_name
-    corpus = os.path.join("NER_data", corpus_name)
+    corpus = os.path.join('..',"NER_data", corpus_name)
     datafile_train = os.path.join(corpus, "train")
     datafile_dev = os.path.join(corpus, "val")
     print("corpus_name: {0}, corpus = {1}, datafile_train = {2}".format(corpus_name, corpus, datafile_train))
 
     # Load/Assemble voc and pairs
     voc, tag, pairs = loadTrainData(corpus_name, datafile_train)
+    save_static_dict(voc,tag,save_dir)
     # Print some pairs to validate
     print("\npairs:")
     for pair in pairs[:10]:
-        print(pair)
+        print(pair,encoding='utf-8')
     # Trim voc and pairs
     voc, pairs = trimRareWords(voc, pairs, MIN_COUNT)
 
